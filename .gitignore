@@ -15,6 +15,11 @@ secrets/
 playwright-report/
 test-results/
 
+# OPSES captured employee data (sensitive — never commit)
+server/data/
+*.pid
+agent.log
+
 # AI assistant state & chats — never upload
 .claude/
 **/.claude/
