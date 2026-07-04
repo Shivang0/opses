@@ -1,4 +1,4 @@
-transformers>=4.50
+transformers>=5.10
 torch
 accelerate
 huggingface_hub

@@ -19,7 +19,9 @@ fi
 source "$HOME/.opses/hf.env"
 
 echo "OPSES Gemma setup — model: $MODEL  ->  $TARGET"
-python -m pip install -q -r "$DIR/requirements.txt"
+export HF_HUB_DISABLE_SYMLINKS_WARNING=1
+# -U so transformers is new enough for the Gemma 4 architecture (needs >=5.10)
+python -m pip install -q -U -r "$DIR/requirements.txt"
 
 echo "→ Downloading model (one time)..."
 python - "$MODEL" "$TARGET" <<'PY'

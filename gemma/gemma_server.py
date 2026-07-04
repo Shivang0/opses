@@ -40,16 +40,24 @@ def _load():
         offline = bool(MODEL_DIR and os.path.isdir(MODEL_DIR))
         src = MODEL_DIR if offline else MODEL
         kw = {} if offline else {"token": TOKEN}
-        print(f"OPSES Gemma: loading {src} (CPU, local) ...", flush=True)
+        cuda = torch.cuda.is_available()
+        print(f"OPSES Gemma: loading {src} ({'GPU' if cuda else 'CPU'}) ...", flush=True)
         t0 = time.time()
         tok = AutoTokenizer.from_pretrained(src, **kw)
+        load_kw = dict(low_cpu_mem_usage=True, **kw)
+        if cuda:  # e.g. gemma-4-E2B on a GPU box
+            load_kw["device_map"] = "auto"
+            load_kw["dtype"] = torch.bfloat16
+        else:
+            load_kw["dtype"] = torch.float32
         try:
-            m = AutoModelForCausalLM.from_pretrained(src, dtype=torch.float32, low_cpu_mem_usage=True, **kw)
-        except TypeError:  # older transformers use torch_dtype
-            m = AutoModelForCausalLM.from_pretrained(src, torch_dtype=torch.float32, low_cpu_mem_usage=True, **kw)
+            m = AutoModelForCausalLM.from_pretrained(src, **load_kw)
+        except TypeError:  # older transformers: dtype -> torch_dtype
+            load_kw["torch_dtype"] = load_kw.pop("dtype")
+            m = AutoModelForCausalLM.from_pretrained(src, **load_kw)
         m.eval()
         STATE.update(loaded=True, tok=tok, m=m)
-        print(f"OPSES Gemma: ready ({src}) in {time.time() - t0:.1f}s", flush=True)
+        print(f"OPSES Gemma: ready ({src}) on {'GPU' if cuda else 'CPU'} in {time.time() - t0:.1f}s", flush=True)
     except Exception as e:  # noqa: BLE001 — surface any load failure via /health
         STATE["error"] = str(e)
         print(f"OPSES Gemma: load FAILED: {e}", flush=True)
@@ -64,6 +72,10 @@ def _generate(prompt, system=None, max_new_tokens=256):
         ids = tok.apply_chat_template(msgs, add_generation_prompt=True, return_tensors="pt")
     except Exception:
         ids = tok((system + "\n\n" if system else "") + prompt, return_tensors="pt").input_ids
+    try:
+        ids = ids.to(next(m.parameters()).device)
+    except Exception:
+        pass
     with torch.no_grad():
         out = m.generate(ids, max_new_tokens=int(max_new_tokens), do_sample=False)
     return tok.decode(out[0][ids.shape[1]:], skip_special_tokens=True).strip()
