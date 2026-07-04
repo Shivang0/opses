@@ -213,6 +213,20 @@ function buildPayload() {
   }
 }
 
+// one-shot reachability check before the first sync — catches a mistyped or
+// unreachable OPSES_SERVER (e.g. a stale tunnel URL) with a clear message
+// instead of a confusing hang or a bare fetch error.
+async function checkConnectivity() {
+  try {
+    await fetch(`${SERVER}/`, { signal: AbortSignal.timeout(5000) })
+    console.log(`OPSES: server reachable at ${SERVER}`)
+    return true
+  } catch (e) {
+    console.error(`OPSES: cannot reach server at ${SERVER} (${e.message}). Check OPSES_SERVER (and that any tunnel is up) and try again.`)
+    return false
+  }
+}
+
 async function push(payload) {
   const url = `${SERVER}/ingest/${encodeURIComponent(EMPLOYEE_ID)}`
   try {
@@ -226,6 +240,7 @@ async function push(payload) {
 }
 
 async function main() {
+  await checkConnectivity()
   await push(buildPayload())
   if (WATCH) {
     console.log(`OPSES: watching for real-time updates every ${INTERVAL / 1000}s (Ctrl+C to stop)...`)
