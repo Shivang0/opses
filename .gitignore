@@ -1,0 +1,25 @@
+# dependencies / build
+node_modules/
+dist/
+build/
+
+# env & secrets (never commit tokens/keys)
+.env
+.env.*
+*.local
+*.key
+*.pem
+secrets/
+
+# test artifacts
+playwright-report/
+test-results/
+
+# AI assistant state & chats — never upload
+.claude/
+**/.claude/
+*.chat
+chats/
+transcripts/
+.aider*
+.cursor/
