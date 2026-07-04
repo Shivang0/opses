@@ -12,7 +12,7 @@ export default function Compliance() {
   const tally = (s: ControlStatus): number => controls.filter((c) => c.status === s).length
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <PageHeader
         eyebrow="Console"
         title="Compliance"
@@ -24,8 +24,8 @@ export default function Compliance() {
         <CardContent className="grid grid-cols-1 gap-6 p-6 sm:grid-cols-[1fr_auto] sm:items-center">
           <div className="max-w-md">
             <div className="mb-2 flex items-baseline justify-between gap-4">
-              <span className="text-sm font-medium text-ink">Overall compliance score</span>
-              <span className="font-mono text-sm text-ink">
+              <span className="text-sm font-medium text-paper">Overall compliance score</span>
+              <span className="font-mono text-sm text-paper">
                 {org.complianceScore}
                 <span className="text-muted">/100</span>
               </span>
@@ -38,8 +38,8 @@ export default function Compliance() {
           <dl className="flex gap-6 sm:gap-8">
             {STATUS_ORDER.map((s) => (
               <div key={s}>
-                <dt className="text-xs text-muted">{controlStatusMeta[s].label}</dt>
-                <dd className="mt-0.5 font-mono text-2xl font-semibold tabular-nums text-ink">
+                <dt className="mono-eyebrow">{controlStatusMeta[s].label}</dt>
+                <dd className="mt-1 font-mono text-2xl font-semibold tabular-nums text-paper">
                   {tally(s)}
                 </dd>
               </div>
@@ -66,7 +66,7 @@ export default function Compliance() {
                 {c.findings > 0 ? (
                   <Link
                     to="/dashboard/findings"
-                    className="inline-flex items-center gap-1 rounded-md text-sm font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+                    className="inline-flex items-center gap-1 rounded-md text-sm font-medium text-accent transition-colors hover:text-paper"
                   >
                     {c.findings} open {c.findings === 1 ? 'finding' : 'findings'}
                     <ArrowUpRight className="size-4" aria-hidden="true" />

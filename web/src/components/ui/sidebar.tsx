@@ -3,15 +3,16 @@ import { NavLink } from 'react-router-dom'
 import { cn } from '../../lib/utils'
 
 /**
- * Sidebar shell — a complementary vertical rail on surface. Compose a brand
- * mark, a <nav> of SidebarItems, and an optional footer inside it.
+ * Sidebar shell — a complementary vertical rail on the near-black band, split
+ * from content by a single hairline. Compose a brand mark, a <nav> of
+ * SidebarItems, and an optional footer inside it.
  */
 export const Sidebar = React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(
   ({ className, ...props }, ref) => (
     <aside
       ref={ref}
       className={cn(
-        'flex h-full w-60 shrink-0 flex-col gap-1 border-r border-border bg-surface p-3',
+        'flex h-full w-60 shrink-0 flex-col gap-1 border-r border-line bg-ink-2 p-3',
         className,
       )}
       {...props}
@@ -31,8 +32,9 @@ export interface SidebarItemProps
 }
 
 /**
- * SidebarItem — a NavLink row. Active state is driven by the router; when
- * active it also gets aria-current="page" for assistive tech automatically.
+ * SidebarItem — a NavLink row. Active state is driven by the router: it shows a
+ * left amber marker and brightens to paper text, and gets aria-current="page"
+ * for assistive tech automatically. Focus uses the global accent outline.
  */
 export const SidebarItem = React.forwardRef<HTMLAnchorElement, SidebarItemProps>(
   ({ icon, label, className, ...props }, ref) => (
@@ -40,9 +42,10 @@ export const SidebarItem = React.forwardRef<HTMLAnchorElement, SidebarItemProps>
       ref={ref}
       className={({ isActive }) =>
         cn(
-          'flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface',
-          isActive ? 'bg-primary-soft text-primary' : 'text-muted hover:bg-canvas hover:text-ink',
+          'relative flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+          isActive
+            ? 'bg-surface-2 text-paper before:absolute before:left-0 before:top-1/2 before:h-5 before:w-[3px] before:-translate-y-1/2 before:rounded-r-full before:bg-accent'
+            : 'text-muted hover:bg-surface-2 hover:text-paper',
           className,
         )
       }

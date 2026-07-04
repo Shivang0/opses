@@ -14,8 +14,9 @@ export interface PageHeaderProps extends Omit<React.HTMLAttributes<HTMLDivElemen
 }
 
 /**
- * PageHeader — the title block at the top of a console page. Stacks on mobile,
- * splits title/actions on wider screens.
+ * PageHeader — the title block at the top of a console page. Oversized Fraunces
+ * title (via the h1 default face). Stacks on mobile, splits title/actions on
+ * wider screens.
  */
 export function PageHeader({
   title,
@@ -31,9 +32,9 @@ export function PageHeader({
       {...props}
     >
       <div className="min-w-0">
-        {eyebrow && <Eyebrow className="mb-1.5">{eyebrow}</Eyebrow>}
-        <h1 className="text-2xl font-semibold tracking-tight text-ink">{title}</h1>
-        {subtitle && <p className="mt-1 text-sm text-muted">{subtitle}</p>}
+        {eyebrow && <Eyebrow className="mb-2">{eyebrow}</Eyebrow>}
+        <h1 className="text-2xl text-paper sm:text-3xl">{title}</h1>
+        {subtitle && <p className="mt-1.5 text-sm text-muted">{subtitle}</p>}
       </div>
       {actions && <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div>}
     </div>

@@ -1,12 +1,19 @@
 import * as React from 'react'
 import { cn } from '../../lib/utils'
 
-/** Card surface — 1px border, xl radius, subtle shadow. Compose with the parts below. */
+/**
+ * Card surface — cinematic-editorial: surface fill, 1px hairline border, xl
+ * radius, and a faint inset top ring instead of a drop shadow. Compose with
+ * the parts below.
+ */
 export const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn('rounded-xl border border-border bg-surface shadow-sm', className)}
+      className={cn(
+        'rounded-[var(--radius)] border border-line bg-surface shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]',
+        className,
+      )}
       {...props}
     />
   ),
@@ -26,7 +33,7 @@ export const CardTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <h3
     ref={ref}
-    className={cn('text-base font-semibold leading-tight tracking-tight text-ink', className)}
+    className={cn('font-display text-base font-medium leading-tight text-paper', className)}
     {...props}
   />
 ))

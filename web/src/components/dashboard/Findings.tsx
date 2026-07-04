@@ -42,7 +42,7 @@ function SeverityFilter({
     <div
       role="group"
       aria-label="Filter findings by severity"
-      className="inline-flex rounded-lg border border-border bg-surface p-0.5"
+      className="inline-flex rounded-lg border border-line bg-surface p-0.5"
     >
       {FILTERS.map((f) => {
         const active = value === f.value
@@ -52,8 +52,8 @@ function SeverityFilter({
             type="button"
             onClick={() => onChange(f.value)}
             aria-pressed={active}
-            className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-surface ${
-              active ? 'bg-primary-soft text-primary' : 'text-muted hover:text-ink'
+            className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+              active ? 'bg-accent/15 text-accent' : 'text-muted hover:text-paper'
             }`}
           >
             {f.label}
@@ -69,7 +69,7 @@ function Field({ label, value }: { label: string; value: string }) {
   return (
     <div className="bg-surface p-3">
       <dt className="text-xs text-muted">{label}</dt>
-      <dd className="mt-0.5 text-sm font-medium text-ink">{value}</dd>
+      <dd className="mt-0.5 text-sm font-medium text-paper">{value}</dd>
     </div>
   )
 }
@@ -82,22 +82,22 @@ function FindingDetail({ finding }: { finding: ViewFinding }) {
         <span className="text-xs text-muted">Detected {formatDate(finding.detectedAt)}</span>
       </div>
 
-      <p className="text-sm leading-relaxed text-ink-soft">{finding.detail}</p>
+      <p className="text-sm leading-relaxed text-muted">{finding.detail}</p>
 
       <div>
-        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted">Evidence</p>
-        <pre className="overflow-x-auto rounded-lg border border-border bg-ink px-3 py-3 font-mono text-xs leading-relaxed text-canvas">
+        <p className="mono-eyebrow mb-2">Evidence</p>
+        <pre className="overflow-x-auto rounded-lg border border-line bg-ink px-3 py-3 font-mono text-xs leading-relaxed text-muted">
           {finding.evidence}
         </pre>
       </div>
 
       {finding.savingsUSDPerDay != null && (
-        <div className="rounded-lg border border-ok/25 bg-ok-soft px-3 py-2.5 text-sm text-ok">
+        <div className="rounded-lg border border-ok/25 bg-ok/15 px-3 py-2.5 text-sm text-ok">
           Estimated savings of {formatUSD(finding.savingsUSDPerDay)}/day if remediated.
         </div>
       )}
 
-      <dl className="grid grid-cols-1 gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2">
+      <dl className="grid grid-cols-1 gap-px overflow-hidden rounded-xl border border-line bg-line sm:grid-cols-2">
         <Field label="Developer" value={finding.devName} />
         <Field label="Category" value={KIND_LABEL[finding.kind]} />
         <Field label="Control" value={finding.control} />
@@ -146,7 +146,7 @@ export default function Findings() {
   const shown = shownRef.current
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <PageHeader
         eyebrow="Console"
         title="Findings"
@@ -154,7 +154,7 @@ export default function Findings() {
         actions={<SeverityFilter value={filter} onChange={setFilter} counts={counts} />}
       />
 
-      <Card>
+      <Card className="overflow-hidden">
         <Table>
           <THead>
             <TR>
@@ -187,13 +187,13 @@ export default function Findings() {
                       setActiveId(f.id)
                     }}
                     aria-haspopup="dialog"
-                    className="rounded text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+                    className="rounded text-left"
                   >
                     <span className="block text-xs text-subtle">{KIND_LABEL[f.kind]}</span>
-                    <span className="block truncate font-medium text-ink">{f.title}</span>
+                    <span className="block truncate font-medium text-paper">{f.title}</span>
                   </button>
                 </TD>
-                <TD className="whitespace-nowrap">{f.devName}</TD>
+                <TD className="whitespace-nowrap text-paper">{f.devName}</TD>
                 <TD className="whitespace-nowrap font-mono text-xs text-muted">{f.control}</TD>
                 <TD className="whitespace-nowrap text-right text-muted">
                   {formatDateShort(f.detectedAt)}
@@ -205,7 +205,7 @@ export default function Findings() {
             ))}
           </TBody>
         </Table>
-        <div className="border-t border-border px-3 py-2.5 text-xs text-muted">
+        <div className="border-t border-line px-3 py-2.5 font-mono text-xs text-subtle">
           Showing {rows.length} of {findings.length} findings
         </div>
       </Card>

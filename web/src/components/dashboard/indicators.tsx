@@ -27,14 +27,14 @@ export function RiskMeter({ score, className }: { score: number; className?: str
         aria-valuemin={0}
         aria-valuemax={100}
         aria-label={`Risk score ${score} of 100`}
-        className="block h-1.5 w-16 overflow-hidden rounded-full bg-border"
+        className="block h-1.5 w-16 overflow-hidden rounded-full bg-line"
       >
         <span
           className={cn('block h-full rounded-full', riskFill[level])}
           style={{ width: `${score}%` }}
         />
       </span>
-      <span className="font-mono text-sm tabular-nums text-ink">{score}</span>
+      <span className="font-mono text-sm tabular-nums text-paper">{score}</span>
     </div>
   )
 }
@@ -84,9 +84,9 @@ export function ProgressMeter({
       aria-valuenow={value}
       aria-valuemin={0}
       aria-valuemax={max}
-      className={cn('h-2 w-full overflow-hidden rounded-full bg-border', className)}
+      className={cn('h-2 w-full overflow-hidden rounded-full bg-line', className)}
     >
-      <div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
+      <div className="h-full rounded-full bg-accent" style={{ width: `${pct}%` }} />
     </div>
   )
 }

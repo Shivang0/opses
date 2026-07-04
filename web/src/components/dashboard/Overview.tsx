@@ -19,7 +19,7 @@ import { formatUSD } from '../../lib/utils'
 
 function LegendItem({ color, label }: { color: string; label: string }) {
   return (
-    <span className="flex items-center gap-1.5 text-xs font-medium text-muted">
+    <span className="flex items-center gap-1.5 font-mono text-xs text-muted">
       <span aria-hidden="true" className="size-2.5 rounded-[3px]" style={{ background: color }} />
       {label}
     </span>
@@ -33,7 +33,7 @@ export default function Overview() {
   const toolBreakdown = toolSplit.map((t) => `${t.value} ${t.name}`).join(' · ')
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <PageHeader
         eyebrow="Console"
         title="Overview"
@@ -85,8 +85,8 @@ export default function Overview() {
               <CardDescription>Org-wide tokens and estimated cost per day.</CardDescription>
             </div>
             <div className="hidden shrink-0 items-center gap-4 sm:flex">
-              <LegendItem color="var(--color-primary)" label="Tokens (M)" />
-              <LegendItem color="var(--color-ink-soft)" label="Spend ($)" />
+              <LegendItem color="var(--color-accent)" label="Tokens (M)" />
+              <LegendItem color="var(--color-accent-2)" label="Spend ($)" />
             </div>
           </CardHeader>
           <CardContent>
@@ -115,22 +115,22 @@ export default function Overview() {
             </div>
             <Link
               to="/dashboard/findings"
-              className="inline-flex items-center gap-1 rounded-md text-sm font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+              className="inline-flex items-center gap-1 rounded-md text-sm font-medium text-accent transition-colors hover:text-paper"
             >
               View all <ArrowUpRight className="size-4" aria-hidden="true" />
             </Link>
           </CardHeader>
           <CardContent>
-            <ul className="-mx-2 divide-y divide-border">
+            <ul className="-mx-2 divide-y divide-line">
               {topRisks.map((f) => (
                 <li key={f.id}>
                   <Link
                     to={`/dashboard/findings?finding=${f.id}`}
-                    className="group flex items-center gap-3 rounded-lg px-2 py-3 transition-colors hover:bg-canvas focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
+                    className="group flex items-center gap-3 rounded-lg px-2 py-3 transition-colors hover:bg-surface-2"
                   >
                     <Badge variant={f.severity}>{severityLabel[f.severity]}</Badge>
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm font-medium text-ink">{f.title}</span>
+                      <span className="block truncate text-sm font-medium text-paper">{f.title}</span>
                       <span className="block truncate text-xs text-muted">
                         {f.devName} · {f.control}
                       </span>
@@ -151,7 +151,7 @@ export default function Overview() {
             <CardTitle>Compliance posture</CardTitle>
             <Link
               to="/dashboard/compliance"
-              className="rounded-md text-sm font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+              className="rounded-md text-sm font-medium text-accent transition-colors hover:text-paper"
             >
               Details
             </Link>
@@ -159,7 +159,7 @@ export default function Overview() {
           <CardContent className="space-y-4">
             <div>
               <div className="mb-1.5 flex items-baseline justify-between">
-                <span className="font-mono text-sm text-ink">
+                <span className="font-mono text-sm text-paper">
                   {org.complianceScore}
                   <span className="text-muted">/100</span>
                 </span>
@@ -171,7 +171,7 @@ export default function Overview() {
               {controls.map((c) => (
                 <li key={c.id} className="flex items-center gap-3">
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-medium text-ink">{c.label}</span>
+                    <span className="block truncate text-sm font-medium text-paper">{c.label}</span>
                     <span className="block truncate font-mono text-xs text-subtle">{c.id}</span>
                   </span>
                   <ControlStatusBadge status={c.status} />

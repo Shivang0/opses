@@ -11,9 +11,9 @@ export interface SectionProps extends React.HTMLAttributes<HTMLElement> {
 }
 
 /**
- * Section — landing-page band. Full-bleed padding for vertical rhythm with a
- * centered max-width container inside. Set container={false} for hero rows that
- * need a custom inner layout.
+ * Section — landing-page band. Generous full-bleed padding for editorial
+ * vertical rhythm with a centered max-width container inside. Set
+ * container={false} for hero rows that need a custom inner layout.
  */
 export function Section({
   as: Tag = 'section',
@@ -34,15 +34,7 @@ export function Section({
   )
 }
 
-/** Eyebrow — small mono/uppercase kicker above a section heading. */
+/** Eyebrow — small uppercase mono kicker above a section heading. */
 export function Eyebrow({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
-  return (
-    <p
-      className={cn(
-        'font-mono text-xs font-semibold uppercase tracking-[0.14em] text-primary',
-        className,
-      )}
-      {...props}
-    />
-  )
+  return <p className={cn('mono-eyebrow', className)} {...props} />
 }

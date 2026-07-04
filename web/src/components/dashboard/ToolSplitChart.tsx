@@ -1,7 +1,7 @@
 import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts'
 import type { ToolSplitDatum } from '../../lib/useOpses'
 
-const COLORS = ['var(--color-primary)', 'var(--color-subtle)']
+const COLORS = ['var(--color-accent)', 'var(--color-accent-2)']
 
 /** Two-tone donut of assistant adoption with a legend + share breakdown. */
 export function ToolSplitChart({ data }: { data: ToolSplitDatum[] }) {
@@ -32,8 +32,8 @@ export function ToolSplitChart({ data }: { data: ToolSplitDatum[] }) {
           </PieChart>
         </ResponsiveContainer>
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-          <span className="font-mono text-2xl font-semibold tabular-nums text-ink">{total}</span>
-          <span className="text-xs text-muted">developers</span>
+          <span className="font-mono text-2xl font-semibold tabular-nums text-paper">{total}</span>
+          <span className="mono-eyebrow mt-0.5">developers</span>
         </div>
       </div>
       <ul className="mt-4 space-y-2">
@@ -44,8 +44,8 @@ export function ToolSplitChart({ data }: { data: ToolSplitDatum[] }) {
               className="size-2.5 shrink-0 rounded-full"
               style={{ background: COLORS[i % COLORS.length] }}
             />
-            <span className="text-ink-soft">{t.name}</span>
-            <span className="ml-auto font-mono tabular-nums text-muted">
+            <span className="text-muted">{t.name}</span>
+            <span className="ml-auto font-mono tabular-nums text-subtle">
               {t.value} · {total > 0 ? Math.round((t.value / total) * 100) : 0}%
             </span>
           </li>

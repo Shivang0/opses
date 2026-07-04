@@ -67,7 +67,7 @@ export default function Developers() {
   const shown = shownRef.current
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <PageHeader
         eyebrow="Console"
         title="Developers"
@@ -75,7 +75,7 @@ export default function Developers() {
         actions={<RiskLegend />}
       />
 
-      <Card>
+      <Card className="overflow-hidden">
         <Table>
           <THead>
             <TR>
@@ -107,7 +107,7 @@ export default function Developers() {
                       setActiveId(d.id)
                     }}
                     aria-haspopup="dialog"
-                    className="rounded text-left font-medium text-ink transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+                    className="rounded text-left font-medium text-paper transition-colors hover:text-accent"
                   >
                     {d.name}
                   </button>
@@ -122,10 +122,14 @@ export default function Developers() {
                     ))}
                   </span>
                 </TD>
-                <TD className="text-right font-mono tabular-nums">{d.sessions}</TD>
-                <TD className="text-right font-mono tabular-nums">{formatCompact(d.tokens)}</TD>
-                <TD className="text-right font-mono tabular-nums">{formatUSD(d.costUSD)}</TD>
-                <TD className="text-right font-mono tabular-nums">{d.mcpCount}</TD>
+                <TD className="text-right font-mono tabular-nums text-paper">{d.sessions}</TD>
+                <TD className="text-right font-mono tabular-nums text-paper">
+                  {formatCompact(d.tokens)}
+                </TD>
+                <TD className="text-right font-mono tabular-nums text-paper">
+                  {formatUSD(d.costUSD)}
+                </TD>
+                <TD className="text-right font-mono tabular-nums text-paper">{d.mcpCount}</TD>
                 <TD>
                   <RiskMeter score={d.riskScore} />
                 </TD>

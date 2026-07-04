@@ -30,39 +30,47 @@ export interface StatProps extends React.HTMLAttributes<HTMLDivElement> {
   icon?: React.ReactNode
 }
 
-/** Stat — KPI tile. Self-contained bordered surface; drop into a responsive grid. */
+/** Stat — KPI tile. Mono tabular value, quiet mono-eyebrow label, hairline surface. */
 export const Stat = React.forwardRef<HTMLDivElement, StatProps>(
   ({ className, label, value, delta, trend, tone = 'neutral', hint, icon, ...props }, ref) => {
     const TrendIcon = trend ? trendIcon[trend] : null
     return (
       <div
         ref={ref}
-        className={cn('rounded-xl border border-border bg-surface p-5 shadow-sm', className)}
+        className={cn(
+          'rounded-[var(--radius)] border border-line bg-surface p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]',
+          className,
+        )}
         {...props}
       >
         <div className="flex items-start justify-between gap-3">
-          <p className="text-sm font-medium text-muted">{label}</p>
+          <p className="mono-eyebrow">{label}</p>
           {icon && (
             <span
               aria-hidden="true"
-              className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-border bg-canvas text-ink-soft [&_svg]:size-[18px]"
+              className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-line bg-surface-2 text-muted [&_svg]:size-[18px]"
             >
               {icon}
             </span>
           )}
         </div>
-        <div className="mt-2 flex flex-wrap items-baseline gap-x-2 gap-y-1">
-          <span className="font-mono text-2xl font-semibold tracking-tight text-ink tabular-nums">
+        <div className="mt-3 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+          <span className="font-mono text-2xl font-semibold tracking-tight text-paper tabular-nums">
             {value}
           </span>
           {(delta != null || TrendIcon) && (
-            <span className={cn('inline-flex items-center gap-0.5 text-xs font-medium', toneClass[tone])}>
+            <span
+              className={cn(
+                'inline-flex items-center gap-0.5 font-mono text-xs font-medium tabular-nums',
+                toneClass[tone],
+              )}
+            >
               {TrendIcon && <TrendIcon className="size-3.5" aria-hidden="true" />}
               {delta}
             </span>
           )}
         </div>
-        {hint && <p className="mt-1 text-xs text-subtle">{hint}</p>}
+        {hint && <p className="mt-1.5 text-xs text-subtle">{hint}</p>}
       </div>
     )
   },

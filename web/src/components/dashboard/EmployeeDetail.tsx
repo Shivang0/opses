@@ -34,7 +34,7 @@ function Metric({ label, value }: { label: string; value: string }) {
   return (
     <div className="bg-surface p-3">
       <dt className="text-xs text-muted">{label}</dt>
-      <dd className="mt-0.5 font-mono text-sm font-medium tabular-nums text-ink">{value}</dd>
+      <dd className="mt-0.5 font-mono text-sm font-medium tabular-nums text-paper">{value}</dd>
     </div>
   )
 }
@@ -49,13 +49,13 @@ function SessionRow({ session }: { session: ApiSession }) {
   const events = session.events ?? []
 
   return (
-    <li className="overflow-hidden rounded-lg border border-border bg-surface">
+    <li className="overflow-hidden rounded-lg border border-line bg-surface">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-controls={panelId}
-        className="flex w-full items-start gap-3 p-3 text-left transition-colors hover:bg-canvas focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
+        className="flex w-full items-start gap-3 p-3 text-left transition-colors hover:bg-surface-2"
       >
         {open ? (
           <ChevronDown aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-subtle" />
@@ -64,7 +64,7 @@ function SessionRow({ session }: { session: ApiSession }) {
         )}
         <span className="min-w-0 flex-1">
           <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <span className="truncate text-sm font-medium text-ink">{session.project}</span>
+            <span className="truncate text-sm font-medium text-paper">{session.project}</span>
             {leakCount > 0 && (
               <Badge variant="high">
                 <AlertTriangle className="size-3" aria-hidden="true" />
@@ -77,14 +77,14 @@ function SessionRow({ session }: { session: ApiSession }) {
             <span>{session.messages} msgs</span>
             <span>{formatCompact(session.tokensIn)} in</span>
             <span>{formatCompact(session.tokensOut)} out</span>
-            <span className="text-ink-soft">{formatUSD(session.costUSD)}</span>
+            <span className="text-paper">{formatUSD(session.costUSD)}</span>
           </span>
           {session.models?.length > 0 && (
             <span className="mt-1.5 flex flex-wrap gap-1">
               {session.models.map((m) => (
                 <span
                   key={m}
-                  className="rounded border border-border bg-canvas px-1.5 py-0.5 font-mono text-[11px] text-subtle"
+                  className="rounded border border-line bg-surface-2 px-1.5 py-0.5 font-mono text-[11px] text-subtle"
                 >
                   {shortModel(m)}
                 </span>
@@ -95,7 +95,7 @@ function SessionRow({ session }: { session: ApiSession }) {
       </button>
 
       {open && (
-        <div id={panelId} className="border-t border-border bg-canvas/60 p-3">
+        <div id={panelId} className="border-t border-line bg-ink/40 p-3">
           {events.length === 0 ? (
             <p className="text-xs text-muted">No event trail captured for this session.</p>
           ) : (
@@ -106,14 +106,14 @@ function SessionRow({ session }: { session: ApiSession }) {
                     className={cn(
                       'mt-0.5 inline-flex h-4 shrink-0 items-center rounded px-1.5 text-[10px] font-semibold uppercase tracking-wide',
                       ev.role === 'assistant'
-                        ? 'bg-primary-soft text-primary'
-                        : 'bg-canvas text-muted ring-1 ring-inset ring-border',
+                        ? 'bg-accent/15 text-accent'
+                        : 'bg-surface-2 text-muted ring-1 ring-inset ring-line',
                     )}
                   >
                     {ev.role === 'assistant' ? 'AI' : 'You'}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block text-xs leading-relaxed text-ink-soft">
+                    <span className="block text-xs leading-relaxed text-muted">
                       {ev.textPreview || '—'}
                     </span>
                     <span className="mt-0.5 flex flex-wrap gap-x-2 font-mono text-[10px] text-subtle">
@@ -147,45 +147,45 @@ function ClaudeCodeTab({ tool }: { tool: ApiTool }) {
   return (
     <div className="space-y-4">
       {totals && (
-        <div className="space-y-3 rounded-xl border border-border bg-canvas/60 p-3">
+        <div className="space-y-3 rounded-xl border border-line bg-ink/40 p-3">
           <dl className="grid grid-cols-3 gap-x-4 gap-y-2">
             <div>
               <dt className="text-xs text-muted">Sessions</dt>
-              <dd className="font-mono text-sm font-medium tabular-nums text-ink">
+              <dd className="font-mono text-sm font-medium tabular-nums text-paper">
                 {totals.sessions}
               </dd>
             </div>
             <div>
               <dt className="text-xs text-muted">Messages</dt>
-              <dd className="font-mono text-sm font-medium tabular-nums text-ink">
+              <dd className="font-mono text-sm font-medium tabular-nums text-paper">
                 {formatCompact(totals.messages)}
               </dd>
             </div>
             <div>
               <dt className="text-xs text-muted">Cost</dt>
-              <dd className="font-mono text-sm font-medium tabular-nums text-ink">
+              <dd className="font-mono text-sm font-medium tabular-nums text-paper">
                 {formatUSD(totals.costUSD)}
               </dd>
             </div>
             <div>
               <dt className="text-xs text-muted">Tokens in</dt>
-              <dd className="font-mono text-sm font-medium tabular-nums text-ink">
+              <dd className="font-mono text-sm font-medium tabular-nums text-paper">
                 {formatCompact(totals.tokensIn)}
               </dd>
             </div>
             <div>
               <dt className="text-xs text-muted">Tokens out</dt>
-              <dd className="font-mono text-sm font-medium tabular-nums text-ink">
+              <dd className="font-mono text-sm font-medium tabular-nums text-paper">
                 {formatCompact(totals.tokensOut)}
               </dd>
             </div>
           </dl>
           {models.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 border-t border-border pt-3">
+            <div className="flex flex-wrap gap-1.5 border-t border-line pt-3">
               {models.map(([m, n]) => (
                 <span
                   key={m}
-                  className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-2 py-0.5 font-mono text-[11px] text-muted"
+                  className="inline-flex items-center gap-1 rounded-full border border-line bg-surface-2 px-2 py-0.5 font-mono text-[11px] text-muted"
                 >
                   {shortModel(m)}
                   <span className="text-subtle">×{n}</span>
@@ -197,11 +197,9 @@ function ClaudeCodeTab({ tool }: { tool: ApiTool }) {
       )}
 
       <div>
-        <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted">
+        <h4 className="mono-eyebrow mb-2">
           Sessions
-          <span className="ml-1.5 font-normal normal-case tracking-normal text-subtle">
-            newest first
-          </span>
+          <span className="ml-1.5 normal-case tracking-normal text-subtle">newest first</span>
         </h4>
         {sessions.length === 0 ? (
           <p className="text-sm text-muted">No sessions recorded.</p>
@@ -222,7 +220,7 @@ function ClaudeCodeTab({ tool }: { tool: ApiTool }) {
 // ---------------------------------------------------------------------------
 function CursorTab({ tool }: { tool: ApiTool }) {
   return (
-    <div className="rounded-xl border border-border bg-canvas/60 p-4 text-sm text-muted">
+    <div className="rounded-xl border border-line bg-ink/40 p-4 text-sm text-muted">
       {tool.note ?? 'Cursor telemetry is not connected on this machine.'}
     </div>
   )
@@ -236,11 +234,11 @@ function FindingRow({ finding, onOpen }: { finding: ViewFinding; onOpen: () => v
     <button
       type="button"
       onClick={onOpen}
-      className="group flex w-full items-center gap-3 rounded-lg border border-border bg-surface p-3 text-left transition-colors hover:border-primary/40 hover:bg-canvas focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+      className="group flex w-full items-center gap-3 rounded-lg border border-line bg-surface p-3 text-left transition-colors hover:border-accent/40 hover:bg-surface-2"
     >
       <Badge variant={finding.severity}>{severityLabel[finding.severity]}</Badge>
       <span className="min-w-0 flex-1">
-        <span className="block truncate text-sm font-medium text-ink">{finding.title}</span>
+        <span className="block truncate text-sm font-medium text-paper">{finding.title}</span>
         <span className="block truncate text-xs text-muted">{finding.control}</span>
       </span>
       <ChevronRight
@@ -265,7 +263,7 @@ function ToolTabs({ tools }: { tools: Record<string, ApiTool> }) {
       <div
         role="tablist"
         aria-label="Assistant tools"
-        className="flex gap-1 border-b border-border"
+        className="flex gap-1 border-b border-line"
       >
         {names.map((name) => {
           const selected = name === active
@@ -280,10 +278,10 @@ function ToolTabs({ tools }: { tools: Record<string, ApiTool> }) {
               aria-controls={`${baseId}-panel-${name}`}
               onClick={() => setActive(name)}
               className={cn(
-                '-mb-px inline-flex items-center gap-1.5 border-b-2 px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary',
+                '-mb-px inline-flex items-center gap-1.5 border-b-2 px-3 py-2 text-sm font-medium transition-colors',
                 selected
-                  ? 'border-primary text-ink'
-                  : 'border-transparent text-muted hover:text-ink',
+                  ? 'border-accent text-paper'
+                  : 'border-transparent text-muted hover:text-paper',
               )}
             >
               {name}
@@ -354,7 +352,7 @@ export function EmployeeDetail({
         <RiskBadge score={dev.riskScore} />
       </div>
 
-      <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-3">
+      <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-line bg-line sm:grid-cols-3">
         {facts.map((f) => (
           <Metric key={f.label} label={f.label} value={f.value} />
         ))}
@@ -362,16 +360,16 @@ export function EmployeeDetail({
 
       {/* Tools drill-down */}
       <div>
-        <h3 className="mb-3 text-sm font-semibold text-ink">Tools</h3>
+        <h3 className="mono-eyebrow mb-3">Tools</h3>
         {status === 'loading' && (
-          <div className="flex items-center gap-2 rounded-xl border border-border bg-canvas/60 p-4 text-sm text-muted">
+          <div className="flex items-center gap-2 rounded-xl border border-line bg-ink/40 p-4 text-sm text-muted">
             <Loader2 className="size-4 animate-spin" aria-hidden="true" />
             Loading session detail…
           </div>
         )}
         {status === 'live' && detail && <ToolTabs tools={detail.tools} />}
         {status === 'unavailable' && (
-          <div className="rounded-xl border border-border bg-canvas/60 p-4 text-sm text-muted">
+          <div className="rounded-xl border border-line bg-ink/40 p-4 text-sm text-muted">
             Session-level detail streams from the in-house server. It’s unavailable right now —
             showing the summary above.
           </div>
@@ -380,9 +378,9 @@ export function EmployeeDetail({
 
       {/* Findings */}
       <div>
-        <h3 className="mb-3 text-sm font-semibold text-ink">
+        <h3 className="mono-eyebrow mb-3">
           Open findings
-          <span className="ml-1.5 font-normal text-muted">({devFindings.length})</span>
+          <span className="ml-1.5 normal-case text-muted">({devFindings.length})</span>
         </h3>
         {devFindings.length > 0 ? (
           <div className="space-y-2">
@@ -391,7 +389,7 @@ export function EmployeeDetail({
             ))}
           </div>
         ) : (
-          <div className="flex items-center gap-3 rounded-xl border border-ok/25 bg-ok-soft p-4 text-sm text-ok">
+          <div className="flex items-center gap-3 rounded-xl border border-ok/25 bg-ok/15 p-4 text-sm text-ok">
             <ShieldCheck className="size-5 shrink-0" aria-hidden="true" />
             No open findings — this developer is clean.
           </div>

@@ -76,7 +76,7 @@ export function SlideOver({ open, onClose, title, eyebrow, children, footer }: S
       <div
         onClick={onClose}
         className={cn(
-          'absolute inset-0 bg-ink/40 backdrop-blur-[1px] transition-opacity duration-300',
+          'absolute inset-0 bg-ink/60 backdrop-blur-sm transition-opacity duration-300',
           open ? 'opacity-100' : 'opacity-0',
         )}
       />
@@ -86,15 +86,16 @@ export function SlideOver({ open, onClose, title, eyebrow, children, footer }: S
         aria-modal="true"
         aria-labelledby={titleId}
         className={cn(
-          'absolute inset-y-0 right-0 flex w-full max-w-md flex-col bg-surface shadow-2xl',
+          'absolute inset-y-0 right-0 flex w-full max-w-md flex-col border-l border-line bg-surface',
+          'shadow-[-24px_0_60px_-30px_rgba(0,0,0,0.8)]',
           'transition-transform duration-300 ease-out will-change-transform',
           open ? 'translate-x-0' : 'translate-x-full',
         )}
       >
-        <div className="flex items-start justify-between gap-4 border-b border-border p-5">
+        <div className="flex items-start justify-between gap-4 border-b border-line p-5">
           <div className="min-w-0">
             {eyebrow}
-            <h2 id={titleId} className="mt-1 text-lg font-semibold tracking-tight text-ink">
+            <h2 id={titleId} className="mt-1 text-lg font-medium tracking-tight text-paper">
               {title}
             </h2>
           </div>
@@ -103,13 +104,13 @@ export function SlideOver({ open, onClose, title, eyebrow, children, footer }: S
             type="button"
             onClick={onClose}
             aria-label="Close panel"
-            className="-mr-1 -mt-1 inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-muted transition-colors hover:bg-canvas hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+            className="-mr-1 -mt-1 inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-muted transition-colors hover:bg-surface-2 hover:text-paper"
           >
             <X className="size-5" aria-hidden="true" />
           </button>
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto p-5">{children}</div>
-        {footer && <div className="border-t border-border p-4">{footer}</div>}
+        {footer && <div className="border-t border-line p-4">{footer}</div>}
       </div>
     </div>
   )

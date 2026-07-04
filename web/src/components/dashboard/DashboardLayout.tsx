@@ -38,12 +38,12 @@ function titleForPath(path: string): string {
 function Brand() {
   return (
     <div className="flex items-center gap-2.5 px-2 py-2">
-      <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-ink text-canvas">
+      <span className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-line bg-surface-2 text-accent">
         <ShieldCheck className="size-[18px]" aria-hidden="true" />
       </span>
       <div className="leading-tight">
-        <p className="text-sm font-semibold tracking-tight text-ink">OPSES</p>
-        <p className="text-xs text-muted">Governance console</p>
+        <p className="font-mono text-sm font-semibold tracking-[0.2em] text-paper">OPSES</p>
+        <p className="text-xs text-subtle">Governance console</p>
       </div>
     </div>
   )
@@ -68,17 +68,18 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
 
 function SidebarFooter() {
   return (
-    <div className="rounded-lg border border-border bg-canvas p-3">
-      <p className="text-xs font-semibold text-ink">Acme Corp</p>
-      <p className="mt-0.5 text-xs text-muted">Self-hosted deployment</p>
+    <div className="rounded-lg border border-line bg-surface p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
+      <p className="mono-eyebrow">Tenant</p>
+      <p className="mt-1 text-xs font-semibold text-paper">Acme Corp</p>
+      <p className="mt-0.5 text-xs text-subtle">Self-hosted deployment</p>
     </div>
   )
 }
 
 function SecurePill() {
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-ok/25 bg-ok-soft px-2.5 py-1 text-xs font-medium text-ok">
-      <Lock className="size-3.5" aria-hidden="true" />
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface-2 px-2.5 py-1 text-xs font-medium text-muted">
+      <Lock className="size-3.5 text-accent" aria-hidden="true" />
       <span className="hidden sm:inline">In-house — nothing leaves the building</span>
       <span className="sm:hidden">In-house</span>
     </span>
@@ -93,7 +94,7 @@ function ConnectionPill() {
     return (
       <span
         title="Streaming live data from the in-house server"
-        className="inline-flex items-center gap-1.5 rounded-full border border-ok/25 bg-ok-soft px-2.5 py-1 text-xs font-medium text-ok"
+        className="inline-flex items-center gap-1.5 rounded-full border border-ok/25 bg-ok/15 px-2.5 py-1 font-mono text-[0.7rem] font-medium uppercase tracking-[0.1em] text-ok"
       >
         <span aria-hidden="true" className="relative flex size-2">
           <span className="absolute inline-flex size-full animate-ping rounded-full bg-ok/60" />
@@ -108,7 +109,7 @@ function ConnectionPill() {
       title={
         status === 'loading' ? 'Connecting to the server…' : 'Server unreachable — showing sample data'
       }
-      className="inline-flex items-center gap-1.5 rounded-full border border-border bg-canvas px-2.5 py-1 text-xs font-medium text-muted"
+      className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface-2 px-2.5 py-1 font-mono text-[0.7rem] font-medium uppercase tracking-[0.1em] text-muted"
     >
       <span aria-hidden="true" className="size-2 rounded-full bg-subtle" />
       {status === 'loading' ? 'Connecting' : 'Sample data'}
@@ -136,7 +137,7 @@ export default function DashboardLayout() {
   }, [navOpen])
 
   return (
-    <div className="flex min-h-screen bg-canvas text-ink">
+    <div className="flex min-h-screen bg-ink text-paper">
       {/* Desktop rail */}
       <Sidebar className="sticky top-0 hidden h-screen lg:flex">
         <Brand />
@@ -160,7 +161,7 @@ export default function DashboardLayout() {
         <div
           onClick={() => setNavOpen(false)}
           className={cn(
-            'absolute inset-0 bg-ink/40 transition-opacity duration-300',
+            'absolute inset-0 bg-ink/60 backdrop-blur-sm transition-opacity duration-300',
             navOpen ? 'opacity-100' : 'opacity-0',
           )}
         />
@@ -177,7 +178,7 @@ export default function DashboardLayout() {
                 type="button"
                 onClick={() => setNavOpen(false)}
                 aria-label="Close navigation"
-                className="inline-flex size-9 items-center justify-center rounded-lg text-muted transition-colors hover:bg-canvas hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+                className="inline-flex size-9 items-center justify-center rounded-lg text-muted transition-colors hover:bg-surface-2 hover:text-paper"
               >
                 <X className="size-5" aria-hidden="true" />
               </button>
@@ -194,25 +195,25 @@ export default function DashboardLayout() {
 
       {/* Main column */}
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-3 border-b border-border bg-surface/85 px-4 backdrop-blur sm:px-6">
+        <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-3 border-b border-line bg-ink/80 px-4 backdrop-blur sm:px-6">
           <button
             type="button"
             onClick={() => setNavOpen(true)}
             aria-label="Open navigation"
             aria-expanded={navOpen}
-            className="inline-flex size-9 items-center justify-center rounded-lg text-muted transition-colors hover:bg-canvas hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface lg:hidden"
+            className="inline-flex size-9 items-center justify-center rounded-lg text-muted transition-colors hover:bg-surface-2 hover:text-paper lg:hidden"
           >
             <Menu className="size-5" aria-hidden="true" />
           </button>
-          <h1 className="min-w-0 flex-1 truncate text-sm font-semibold text-ink">
+          <div className="min-w-0 flex-1 truncate font-display text-lg font-medium tracking-tight text-paper">
             {titleForPath(location.pathname)}
-          </h1>
+          </div>
           <div className="flex shrink-0 items-center gap-2">
             <ConnectionPill />
             <SecurePill />
           </div>
         </header>
-        <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
+        <main className="flex-1 px-4 py-8 sm:px-6 lg:px-8">
           <div className="mx-auto w-full max-w-7xl">
             <Outlet />
           </div>

@@ -1,35 +1,38 @@
 @import 'tailwindcss';
 
-/* OPSES design tokens — restrained, enterprise-security, Stripe/Linear-clean.
-   No emoji, no gradient "AI" clichés. One confident accent + severity semantics. */
+/* OPSES — "cinematic editorial security" dark theme. See /design.md.
+   Fraunces (display) + Hanken Grotesk (UI) + JetBrains Mono (data). Warm amber accent,
+   near-black ink base, hairline structure, grain + hero glow. No Inter, no purple, no emoji. */
 @theme {
-  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Fraunces', ui-serif, Georgia, serif;
+  --font-sans: 'Hanken Grotesk', ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Consolas, monospace;
 
-  /* neutrals */
-  --color-ink: #0b0b0f; /* primary text / dark surfaces */
-  --color-ink-soft: #26262b;
-  --color-canvas: #fafafb; /* app background */
-  --color-surface: #ffffff; /* cards / panels */
-  --color-border: #e9e9ef;
-  --color-muted: #52525b; /* secondary text — ~7:1 on white (WCAG AA) */
-  --color-subtle: #6b7280; /* tertiary text — ~4.8:1 on white (WCAG AA) */
+  /* base / surfaces */
+  --color-ink: #0a0a0c; /* page base */
+  --color-ink-2: #0e0f12; /* alt band */
+  --color-surface: #141418; /* cards */
+  --color-surface-2: #1b1c21; /* raised / hover */
+  --color-line: #26262c; /* hairline border */
+  --color-line-soft: #1c1d22;
 
-  /* brand accent (used sparingly) */
-  --color-primary: #4f46e5;
-  --color-primary-fg: #ffffff;
-  --color-primary-soft: #eef2ff;
+  /* text (AA on ink & surface) */
+  --color-paper: #f3f0e9; /* primary text — warm paper white */
+  --color-muted: #a6a19a; /* secondary ~7:1 */
+  --color-subtle: #928e86; /* tertiary / labels ~5:1 */
 
-  /* severity / status semantics */
-  --color-danger: #b91c1c; /* red-700 — >=4.5:1 on danger-soft (WCAG AA) */
-  --color-danger-soft: #fef2f2;
-  --color-warn: #b45309; /* amber-700 — >=4.5:1 on warn-soft (WCAG AA) */
-  --color-warn-soft: #fffbeb;
-  --color-ok: #15803d; /* green-700 — >=4.5:1 on ok-soft (WCAG AA) */
-  --color-ok-soft: #f0fdf4;
-  --color-info: #2563eb;
+  /* accent — used sparingly */
+  --color-accent: #e6b450; /* amber / gold */
+  --color-accent-fg: #201700; /* text on amber */
+  --color-accent-2: #7dd3c0; /* cool mint — secondary data series only */
 
-  --radius: 0.625rem;
+  /* severity (bright for dark bg) */
+  --color-danger: #ff6b61;
+  --color-warn: #f5c451;
+  --color-ok: #58d38c;
+  --color-info: #7aa2ff;
+
+  --radius: 0.75rem;
 }
 
 @layer base {
@@ -40,16 +43,60 @@
     margin: 0;
     min-height: 100vh;
     font-family: var(--font-sans);
-    background: var(--color-canvas);
-    color: var(--color-ink);
+    background: var(--color-ink);
+    color: var(--color-paper);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
   }
   * {
-    border-color: var(--color-border);
+    border-color: var(--color-line);
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+    font-weight: 500;
+    letter-spacing: -0.02em;
   }
   ::selection {
-    background: var(--color-primary-soft);
+    background: rgba(230, 180, 80, 0.28);
+    color: var(--color-paper);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+}
+
+/* fixed grain overlay for atmosphere */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.04;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* utility helpers used across the app */
+.mono-eyebrow {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.72rem;
+  color: var(--color-subtle);
+}
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
   }
 }

@@ -1,0 +1,153 @@
+/* OPSES landing — motion + atmosphere helpers.
+   All color/tokens come from index.css @theme (no hardcoded hex here).
+   Every animation below is neutralized by the global prefers-reduced-motion
+   rule in index.css (it zeroes animation/transition durations). */
+
+/* ---------- scroll reveal (IntersectionObserver, once) ---------- */
+.opses-reveal {
+  opacity: 0;
+  transform: translateY(1.75rem);
+  transition:
+    opacity 0.7s cubic-bezier(0.2, 0.8, 0.2, 1),
+    transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.opses-reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- hero page-load reveal (gated by .opses-anim on the root) ---------- */
+.opses-fade {
+  will-change: opacity, transform;
+}
+.opses-anim .opses-fade {
+  opacity: 0;
+  transform: translateY(1rem);
+  animation: opses-fade-in 0.85s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+.opses-line-mask {
+  overflow: hidden;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+.opses-line {
+  display: inline-block;
+  will-change: transform, opacity;
+}
+.opses-anim .opses-line {
+  transform: translateY(110%);
+  opacity: 0;
+  animation: opses-line-in 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+@keyframes opses-fade-in {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes opses-line-in {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- atmospheric amber glow ---------- */
+.opses-glow {
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklab, var(--color-accent) 22%, transparent),
+    transparent 78%
+  );
+  pointer-events: none;
+}
+.opses-glow--drift {
+  animation: opses-drift 22s ease-in-out infinite;
+}
+@keyframes opses-drift {
+  0%,
+  100% {
+    transform: translate3d(-3%, -1%, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(3%, 2%, 0) scale(1.08);
+  }
+}
+
+/* ---------- radar / signal motif ---------- */
+.opses-ring {
+  fill: none;
+  stroke: var(--color-line);
+}
+.opses-ring--soft {
+  stroke: var(--color-line-soft);
+}
+.opses-ring--accent {
+  fill: none;
+  stroke: color-mix(in oklab, var(--color-accent) 45%, transparent);
+}
+.opses-grid-line {
+  stroke: var(--color-line-soft);
+}
+.opses-dot {
+  fill: var(--color-accent);
+}
+.opses-dot--mint {
+  fill: var(--color-accent-2);
+}
+.opses-wedge {
+  fill: color-mix(in oklab, var(--color-accent) 12%, transparent);
+  transform-box: view-box;
+  transform-origin: 200px 200px;
+  animation: opses-sweep 14s linear infinite;
+}
+.opses-sweep-line {
+  stroke: color-mix(in oklab, var(--color-accent) 60%, transparent);
+  transform-box: view-box;
+  transform-origin: 200px 200px;
+  animation: opses-sweep 14s linear infinite;
+}
+@keyframes opses-sweep {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.opses-ping {
+  fill: none;
+  stroke: color-mix(in oklab, var(--color-accent) 60%, transparent);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: opses-ping 3.4s ease-out infinite;
+}
+@keyframes opses-ping {
+  0% {
+    transform: scale(0.5);
+    opacity: 0.9;
+  }
+  70%,
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+/* ---------- underline-from-left for links ---------- */
+.opses-underline {
+  position: relative;
+}
+.opses-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 1px;
+  background: var(--color-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.opses-underline:hover::after,
+.opses-underline:focus-visible::after {
+  transform: scaleX(1);
+}
