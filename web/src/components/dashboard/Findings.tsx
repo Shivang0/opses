@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { ChevronRight, ExternalLink } from 'lucide-react'
+import { ChevronRight, ExternalLink, Wrench } from 'lucide-react'
 import {
   Badge,
   Button,
@@ -18,6 +18,7 @@ import { SlideOver } from './SlideOver'
 import { bySeverityThenDate, formatDate, formatDateShort, severityLabel } from './meta'
 import { KIND_LABEL, type Severity } from '../../data/sample'
 import { useOpses, type ViewFinding } from '../../lib/useOpses'
+import { remediate } from '../../lib/api'
 import { formatUSD } from '../../lib/utils'
 
 type Filter = 'all' | Severity
@@ -75,6 +76,24 @@ function Field({ label, value }: { label: string; value: string }) {
 }
 
 function FindingDetail({ finding }: { finding: ViewFinding }) {
+  const [fix, setFix] = useState<{ text: string; source: 'gemma' | 'fallback' } | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [failed, setFailed] = useState(false)
+
+  const draftFix = async () => {
+    setLoading(true)
+    setFailed(false)
+    setFix(null)
+    try {
+      const r = await remediate(finding)
+      setFix({ text: r.text, source: r.source })
+    } catch {
+      setFailed(true)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
@@ -96,6 +115,39 @@ function FindingDetail({ finding }: { finding: ViewFinding }) {
           Estimated savings of {formatUSD(finding.savingsUSDPerDay)}/day if remediated.
         </div>
       )}
+
+      {/* Remediation drafted on the CISO box by local Gemma (falls back to a template if it's not running). */}
+      <div>
+        <div className="mb-2 flex items-center justify-between gap-3">
+          <p className="mono-eyebrow">Remediation</p>
+          <Button variant="secondary" size="sm" onClick={draftFix} disabled={loading}>
+            <Wrench className="size-4" aria-hidden="true" />
+            {loading ? 'Drafting…' : fix ? 'Redraft' : 'Draft fix — local Gemma'}
+          </Button>
+        </div>
+        {fix ? (
+          <div className="rounded-lg border border-line bg-ink px-3 py-3">
+            <p className="whitespace-pre-wrap text-sm leading-relaxed text-paper">{fix.text}</p>
+            <p className="mt-2.5 flex items-center gap-1.5 font-mono text-xs text-subtle">
+              <span
+                aria-hidden="true"
+                className={`inline-block size-1.5 rounded-full ${fix.source === 'gemma' ? 'bg-ok' : 'bg-subtle'}`}
+              />
+              {fix.source === 'gemma'
+                ? 'Generated on-device by local Gemma — nothing left the building'
+                : 'Templated fallback — local Gemma is not running'}
+            </p>
+          </div>
+        ) : failed ? (
+          <p className="text-sm text-danger">Couldn’t reach the OPSES server.</p>
+        ) : (
+          !loading && (
+            <p className="text-xs leading-relaxed text-subtle">
+              Drafts remediation steps in-house via Gemma. Nothing leaves the building.
+            </p>
+          )
+        )}
+      </div>
 
       <dl className="grid grid-cols-1 gap-px overflow-hidden rounded-xl border border-line bg-line sm:grid-cols-2">
         <Field label="Developer" value={finding.devName} />
@@ -231,7 +283,7 @@ export default function Findings() {
           ) : undefined
         }
       >
-        {shown && <FindingDetail finding={shown} />}
+        {shown && <FindingDetail key={shown.id} finding={shown} />}
       </SlideOver>
     </div>
   )

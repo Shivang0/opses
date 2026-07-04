@@ -142,6 +142,38 @@ export const getEmployee = (id: string) =>
   get<ApiEmployeeDetail>(`/api/employees/${encodeURIComponent(id)}`)
 
 // ---------------------------------------------------------------------------
+// Local Gemma remediation — POST /api/gemma. The server proxies to the on-device
+// Gemma model and returns { source: 'gemma' } when it answered, or a templated
+// { source: 'fallback' } when Gemma isn't running. Never leaves the building.
+// ---------------------------------------------------------------------------
+export interface GemmaResult {
+  text: string
+  source: 'gemma' | 'fallback'
+  model?: string
+  note?: string
+}
+
+export async function remediate(
+  f: Pick<ApiFinding, 'title' | 'detail' | 'evidence' | 'control' | 'citation'>,
+): Promise<GemmaResult> {
+  const input = `${f.title} — ${f.detail} Evidence: ${f.evidence}. Control: ${f.control} (${f.citation}).`
+  const ctrl = new AbortController()
+  const timer = setTimeout(() => ctrl.abort(), 90000) // local CPU inference can be slow
+  try {
+    const res = await fetch(`${API}/api/gemma`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ task: 'remediate', input }),
+      signal: ctrl.signal,
+    })
+    if (!res.ok) throw new Error(`gemma -> HTTP ${res.status}`)
+    return (await res.json()) as GemmaResult
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Live updates — Server-Sent Events. Calls onUpdate() on every 'update' frame.
 // Returns an unsubscribe function. onError fires if the stream can't be reached.
 // ---------------------------------------------------------------------------
