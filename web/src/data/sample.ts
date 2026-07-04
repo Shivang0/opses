@@ -1,4 +1,4 @@
-// OPSES sample dataset — realistic in-house governance data for the CISO console.
+// OPSES sample dataset - realistic in-house governance data for the CISO console.
 // Consumed by the dashboard until wired to the live analyzer output.
 
 export type Severity = 'high' | 'medium' | 'low'
@@ -68,15 +68,15 @@ export const findings: Finding[] = [
     title: '55 MCP servers burn ~41K startup tokens',
     detail: 'Six servers account for 78% of startup context and are never invoked. Drop them.',
     evidence: '41,200 tokens loaded before first prompt · 6 unused servers',
-    control: 'NIST AI RMF', citation: 'MAP 3.4 — inventory & resource use',
+    control: 'NIST AI RMF', citation: 'MAP 3.4 - inventory & resource use',
     detectedAt: '2026-07-01', savingsUSDPerDay: 6.4,
   },
   {
     id: 'f4', dev: 'alice', kind: 'claudemd_bloat', severity: 'low',
     title: 'CLAUDE.md is 3,200 tokens of stale rules',
     detail: 'A 400-token rewrite preserves every operative rule.',
-    evidence: '3,200 → 400 tokens (–88%)',
-    control: 'NIST AI RMF', citation: 'MAP 3.4 — resource efficiency',
+    evidence: '3,200 → 400 tokens (-88%)',
+    control: 'NIST AI RMF', citation: 'MAP 3.4 - resource efficiency',
     detectedAt: '2026-07-01', savingsUSDPerDay: 1.1,
   },
   {
@@ -84,7 +84,7 @@ export const findings: Finding[] = [
     title: '12 MCP servers, 2 unused',
     detail: 'Minor cleanup available.',
     evidence: '9,800 startup tokens · 2 unused servers',
-    control: 'NIST AI RMF', citation: 'MAP 3.4 — inventory & resource use',
+    control: 'NIST AI RMF', citation: 'MAP 3.4 - inventory & resource use',
     detectedAt: '2026-07-02', savingsUSDPerDay: 0.8,
   },
   {

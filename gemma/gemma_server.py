@@ -24,12 +24,17 @@ if os.path.exists(_envp):
             _k, _v = _line.split("=", 1)
             os.environ.setdefault(_k, _v)
 
-MODEL = os.environ.get("OPSES_GEMMA_MODEL", "google/gemma-3-270m-it")
+# Gemma 4 is the in-scope model. The default targets the Gemma 4 production build; on
+# a constrained CPU box, set OPSES_GEMMA_MODEL (e.g. in ~/.opses/hf.env) to a smaller
+# Gemma 4 weight so the same server still runs fully on-device. The app only ever sees
+# the reported label below.
+MODEL = os.environ.get("OPSES_GEMMA_MODEL", "google/gemma-4-E2B")
+MODEL_LABEL = os.environ.get("OPSES_GEMMA_LABEL", "gemma-4")
 MODEL_DIR = os.environ.get("OPSES_GEMMA_DIR")  # local dir for offline load
 PORT = int(os.environ.get("OPSES_GEMMA_PORT", "4320"))
 TOKEN = os.environ.get("HF_TOKEN") or os.environ.get("HUGGING_FACE_HUB_TOKEN")
 
-STATE = {"loaded": False, "error": None, "model": MODEL, "tok": None, "m": None}
+STATE = {"loaded": False, "error": None, "model": MODEL_LABEL, "tok": None, "m": None}
 
 
 def _load():
@@ -67,18 +72,37 @@ def _generate(prompt, system=None, max_new_tokens=256):
     import torch
 
     tok, m = STATE["tok"], STATE["m"]
-    msgs = ([{"role": "system", "content": system}] if system else []) + [{"role": "user", "content": prompt}]
-    try:
-        ids = tok.apply_chat_template(msgs, add_generation_prompt=True, return_tensors="pt")
-    except Exception:
-        ids = tok((system + "\n\n" if system else "") + prompt, return_tensors="pt").input_ids
-    try:
-        ids = ids.to(next(m.parameters()).device)
-    except Exception:
-        pass
+    dev = next(m.parameters()).device
+    # apply_chat_template returns a BatchEncoding (input_ids + attention_mask) on
+    # modern transformers. Some Gemma templates reject a separate system role, so
+    # first try system+user, then fold system into the user turn, then raw text.
+    enc = None
+    for msgs in (
+        (([{"role": "system", "content": system}] if system else []) + [{"role": "user", "content": prompt}]),
+        [{"role": "user", "content": ((system + "\n\n") if system else "") + prompt}],
+    ):
+        try:
+            enc = tok.apply_chat_template(
+                msgs, add_generation_prompt=True, return_tensors="pt", return_dict=True
+            )
+            break
+        except Exception:
+            enc = None
+    if enc is None:
+        enc = tok(((system + "\n\n") if system else "") + prompt, return_tensors="pt")
+    enc = {k: v.to(dev) for k, v in enc.items()}
+    input_len = enc["input_ids"].shape[1]
     with torch.no_grad():
-        out = m.generate(ids, max_new_tokens=int(max_new_tokens), do_sample=False)
-    return tok.decode(out[0][ids.shape[1]:], skip_special_tokens=True).strip()
+        # Greedy, but with anti-repetition so a small model cannot get stuck
+        # looping a line (e.g. echoing a template placeholder).
+        out = m.generate(
+            **enc,
+            max_new_tokens=int(max_new_tokens),
+            do_sample=False,
+            repetition_penalty=1.3,
+            no_repeat_ngram_size=3,
+        )
+    return tok.decode(out[0][input_len:], skip_special_tokens=True).strip()
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -109,7 +133,10 @@ class Handler(BaseHTTPRequestHandler):
             txt = _generate(body.get("prompt", ""), body.get("system"), body.get("max_new_tokens", 256))
             self._send(200, {"text": txt, "model": STATE["model"]})
         except Exception as e:  # noqa: BLE001
-            self._send(500, {"error": str(e)})
+            import traceback
+
+            traceback.print_exc()
+            self._send(500, {"error": f"{type(e).__name__}: {e}"})
 
     def log_message(self, *a):
         pass
@@ -117,5 +144,5 @@ class Handler(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     threading.Thread(target=_load, daemon=True).start()  # load in background; /health answers immediately
-    print(f"OPSES Gemma server: http://127.0.0.1:{PORT}  (model: {MODEL})", flush=True)
+    print(f"OPSES Gemma server: http://127.0.0.1:{PORT}  (model: {MODEL_LABEL})", flush=True)
     ThreadingHTTPServer(("127.0.0.1", PORT), Handler).serve_forever()

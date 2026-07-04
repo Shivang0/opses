@@ -14,7 +14,7 @@ const PROBLEMS: Problem[] = [
   {
     icon: Ghost,
     title: 'Shadow AI is already here',
-    body: 'Developers paste proprietary code into unsanctioned assistants every day — and you have no record it ever happened.',
+    body: 'Developers paste proprietary code into unsanctioned assistants every day - and you have no record it ever happened.',
   },
   {
     icon: KeyRound,
@@ -72,7 +72,7 @@ export default function ProblemSection() {
         </h2>
         <p className="mt-5 text-lg leading-relaxed text-muted">
           Coding agents are the fastest-moving unsanctioned channel in the enterprise. Every prompt
-          is a potential exfiltration event — and today most of them are invisible.
+          is a potential exfiltration event - and today most of them are invisible.
         </p>
       </Reveal>
 

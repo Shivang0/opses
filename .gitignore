@@ -37,3 +37,16 @@ transport/tunnel/*.pid
 .cloudflared/
 **/.cloudflared/
 cert.pem
+
+# demo screenshots, showcase & captures — may contain masked-but-visible prompt content
+/opses-*.png
+/opses-*.jpeg
+/potpie-*.png
+/potpie-*.jpeg
+/opses-showcase.zip
+/showcase/
+
+# browser-automation artifacts — page snapshots can contain captured content
+.playwright-mcp/
+**/.playwright-mcp/
+*.snapshot.yml

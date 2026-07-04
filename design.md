@@ -4,7 +4,7 @@ Distilled from the two references and committed to a single bold direction. This
 
 ## References → what we take
 - **Creative-Agency (Aurora)** — *the landing DNA*: dark, cinematic, premium; full-bleed hero with an oversized editorial title; sectioned storytelling; refined hover + parallax + staggered page-load reveals; serif editorial accent over a clean grotesque.
-- **Agentlytics** — *the dashboard DNA*: left sidebar + top bar; dense KPI cards; charts (activity/cost/donut); searchable tables; slide-over detail panels; per-entity drill-down.
+- **Operator consoles** — *the dashboard DNA*: left sidebar + top bar; dense KPI cards; charts (activity/cost/donut); searchable tables; slide-over detail panels; per-entity drill-down.
 
 ## Aesthetic direction: "Cinematic editorial security"
 Dark, premium, intelligence-grade — a governance console that feels like a private situation room, not a SaaS dashboard. Bold restraint: heavy negative space, one warm accent, hairline structure, and a couple of high-impact motion moments. **Dark theme throughout** (landing + dashboard) for cohesion and gravity.
@@ -51,7 +51,7 @@ Rules: accent is < ~8% of the surface area. Charts: axes/grid at `--color-line`,
 
 ## Layout
 - **Landing** (dark, editorial): sticky slim nav (mono wordmark `OPSES`, hairline underline on scroll). Full-viewport hero: mono eyebrow, oversized Fraunces headline ("Governance for agentic AI — nothing leaves the building."), one sentence sub, two CTAs, an abstract CSS/SVG motif (concentric rings / signal grid — NOT stock imagery, NOT emoji). Then editorial sections with generous rhythm: the shadow-AI problem (numbered, mono indices), the pipeline (capture→mask→encrypt→relay→Gemma→cited report as a horizontal hairline diagram), the sovereignty beat (full-bleed statement), compliance frameworks (hairline cards), final CTA, minimal footer. Allow asymmetry and one grid-breaking element.
-- **Dashboard** (dark, agentlytics structure): fixed left sidebar (wordmark + nav with active amber marker), top bar (view title + "Live"/"Sample" pill + "In-house" lock pill). Content = KPI row (mono tabular numerals), charts (dark Recharts), tables (hairline rows, hover `--color-surface-2`), slide-over drill-down (right, backdrop blur, focus-trap, Esc). Density like agentlytics but with more breathing room.
+- **Dashboard** (dark, dense operator-console structure): fixed left sidebar (wordmark + nav with active amber marker), top bar (view title + "Live"/"Sample" pill + "In-house" lock pill). Content = KPI row (mono tabular numerals), charts (dark Recharts), tables (hairline rows, hover `--color-surface-2`), slide-over drill-down (right, backdrop blur, focus-trap, Esc). Density like a dense console but with more breathing room.
 
 ## Components (restyle in place — DO NOT change data wiring)
 Button (primary=amber on ink text; ghost=hairline), Card (surface + 1px line + inset ring), Badge (severity dims), Stat (mono value, label, delta), Table (hairline), Sidebar (active amber bar), Meter (thin track, accent/severity fill, accessible name), SlideOver, charts. Keep all shadcn-style APIs and the `useOpses`/`api.ts` data layer intact.

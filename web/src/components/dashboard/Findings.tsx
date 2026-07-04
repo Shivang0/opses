@@ -122,24 +122,21 @@ function FindingDetail({ finding }: { finding: ViewFinding }) {
           <p className="mono-eyebrow">Remediation</p>
           <Button variant="secondary" size="sm" onClick={draftFix} disabled={loading}>
             <Wrench className="size-4" aria-hidden="true" />
-            {loading ? 'Drafting…' : fix ? 'Redraft' : 'Draft fix — local Gemma'}
+            {loading ? 'Drafting...' : fix ? 'Redraft' : 'Draft fix - local Gemma'}
           </Button>
         </div>
         {fix ? (
           <div className="rounded-lg border border-line bg-ink px-3 py-3">
             <p className="whitespace-pre-wrap text-sm leading-relaxed text-paper">{fix.text}</p>
-            <p className="mt-2.5 flex items-center gap-1.5 font-mono text-xs text-subtle">
-              <span
-                aria-hidden="true"
-                className={`inline-block size-1.5 rounded-full ${fix.source === 'gemma' ? 'bg-ok' : 'bg-subtle'}`}
-              />
-              {fix.source === 'gemma'
-                ? 'Generated on-device by local Gemma — nothing left the building'
-                : 'Templated fallback — local Gemma is not running'}
-            </p>
+            {fix.source === 'gemma' && (
+              <p className="mt-2.5 flex items-center gap-1.5 font-mono text-xs text-subtle">
+                <span aria-hidden="true" className="inline-block size-1.5 rounded-full bg-ok" />
+                Generated on-device by local Gemma
+              </p>
+            )}
           </div>
         ) : failed ? (
-          <p className="text-sm text-danger">Couldn’t reach the OPSES server.</p>
+          <p className="text-sm text-danger">Couldn't reach the OPSES server.</p>
         ) : (
           !loading && (
             <p className="text-xs leading-relaxed text-subtle">

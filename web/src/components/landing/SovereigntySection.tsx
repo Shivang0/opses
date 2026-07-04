@@ -2,7 +2,7 @@ import { Eyebrow } from '../ui'
 import { Reveal } from './Reveal'
 
 /**
- * SovereigntySection — the full-bleed emotional beat. Oversized Fraunces
+ * SovereigntySection - the full-bleed emotional beat. Oversized Fraunces
  * statement on an alternate band, a single amber underline as the sole accent.
  */
 export default function SovereigntySection() {
@@ -26,7 +26,7 @@ export default function SovereigntySection() {
         </p>
         <p className="mx-auto mt-8 max-w-xl text-lg leading-relaxed text-muted">
           Capture, masking and review all run on infrastructure you own. Pull the cable and OPSES
-          still works — because nothing was ever meant to leave the building.
+          still works - because nothing was ever meant to leave the building.
         </p>
       </Reveal>
     </section>

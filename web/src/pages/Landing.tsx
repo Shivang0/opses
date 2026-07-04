@@ -9,13 +9,13 @@ import FinalCta from '../components/landing/FinalCta'
 import SiteFooter from '../components/landing/SiteFooter'
 
 /**
- * OPSES landing — cinematic editorial security. A sticky slim nav over a
+ * OPSES landing - cinematic editorial security. A sticky slim nav over a
  * full-viewport hero, then editorial bands: the shadow-AI problem, the in-house
  * pipeline, the sovereignty beat, compliance frameworks, and a closing CTA.
  */
 export default function Landing() {
   return (
-    <div id="top" className="min-h-screen bg-ink text-paper">
+    <div id="top" className="opses-emerald min-h-screen bg-ink text-paper">
       <LandingNav />
       <main>
         <Hero />

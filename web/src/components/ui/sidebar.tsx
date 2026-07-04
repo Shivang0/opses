@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom'
 import { cn } from '../../lib/utils'
 
 /**
- * Sidebar shell — a complementary vertical rail on the near-black band, split
+ * Sidebar shell - a complementary vertical rail on the near-black band, split
  * from content by a single hairline. Compose a brand mark, a <nav> of
  * SidebarItems, and an optional footer inside it.
  */
@@ -23,7 +23,7 @@ Sidebar.displayName = 'Sidebar'
 
 export interface SidebarItemProps
   extends Omit<React.ComponentPropsWithoutRef<typeof NavLink>, 'className' | 'children'> {
-  /** Leading icon (e.g. a lucide icon). Decorative — hidden from AT. */
+  /** Leading icon (e.g. a lucide icon). Decorative - hidden from AT. */
   icon?: React.ReactNode
   /** Visible link label. */
   label: React.ReactNode
@@ -32,7 +32,7 @@ export interface SidebarItemProps
 }
 
 /**
- * SidebarItem — a NavLink row. Active state is driven by the router: it shows a
+ * SidebarItem - a NavLink row. Active state is driven by the router: it shows a
  * left amber marker and brightens to paper text, and gets aria-current="page"
  * for assistive tech automatically. Focus uses the global accent outline.
  */

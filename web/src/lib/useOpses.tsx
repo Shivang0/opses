@@ -1,4 +1,4 @@
-// OPSES data layer — one context that fetches the live in-house API, maps it to
+// OPSES data layer - one context that fetches the live in-house API, maps it to
 // the view-model the dashboard renders, and gracefully falls back to the bundled
 // sample dataset when the server is unreachable so the demo always renders.
 import {
@@ -36,7 +36,7 @@ import {
 import type { ControlStatus } from '../components/dashboard/meta'
 
 // ---------------------------------------------------------------------------
-// View-model — the normalized shapes the components consume, from either source.
+// View-model - the normalized shapes the components consume, from either source.
 // ---------------------------------------------------------------------------
 export interface OrgView {
   activeDevs: number
@@ -112,7 +112,7 @@ export interface OpsesData extends OpsesView {
 }
 
 // ---------------------------------------------------------------------------
-// Mappers — API payload -> view-model.
+// Mappers - API payload -> view-model.
 // ---------------------------------------------------------------------------
 function orgViewFromApi(o: ApiOrg): OrgView {
   return {
@@ -169,7 +169,7 @@ function activityFromApi(a: ApiActivityPoint): ActivityDatum {
   return { date: a.date, tokens: a.tokens, cost: a.cost, sessions: a.sessions }
 }
 
-// Compliance controls aren't served directly — derive them from live findings by
+// Compliance controls aren't served directly - derive them from live findings by
 // mapping each finding's `control` string onto a stable framework catalog.
 const CONTROL_CATALOG: { id: string; label: string; match: (control: string) => boolean }[] = [
   { id: 'EU AI Act Art. 10', label: 'Data governance & management', match: (c) => c.startsWith('EU AI Act') },
@@ -195,7 +195,7 @@ function controlsFromFindings(findings: ViewFinding[]): ControlView[] {
 }
 
 // ---------------------------------------------------------------------------
-// Sample fallback — build the same view-model from the bundled dataset.
+// Sample fallback - build the same view-model from the bundled dataset.
 // ---------------------------------------------------------------------------
 function buildSampleView(): OpsesView {
   const nameById = new Map(sampleDevs.map((d) => [d.id, d.name]))
@@ -302,7 +302,7 @@ export function useOpses(): OpsesData {
 }
 
 // ---------------------------------------------------------------------------
-// On-demand employee detail (drill-down) — fetched when a developer is opened.
+// On-demand employee detail (drill-down) - fetched when a developer is opened.
 // ---------------------------------------------------------------------------
 export type DetailStatus = 'idle' | 'loading' | 'live' | 'unavailable'
 

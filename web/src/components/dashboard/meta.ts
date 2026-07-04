@@ -1,4 +1,4 @@
-// Shared, JSX-free helpers for the CISO dashboard. Pure data mapping only —
+// Shared, JSX-free helpers for the CISO dashboard. Pure data mapping only -
 // presentational indicators live in ./indicators.tsx.
 import {
   developers,
@@ -44,7 +44,7 @@ export const riskLabel: Record<RiskLevel, string> = {
   medium: 'Elevated',
   low: 'Low',
 }
-/** Badge variant for a risk level — low risk reads as positive (green). */
+/** Badge variant for a risk level - low risk reads as positive (green). */
 export const riskBadgeVariant: Record<RiskLevel, 'high' | 'medium' | 'ok'> = {
   high: 'high',
   medium: 'medium',
@@ -81,4 +81,28 @@ export function formatDate(iso: string): string {
 }
 export function formatDateShort(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}
+
+/** Date + time, e.g. "Jul 4, 1:25 PM" - used for session/event timestamps. */
+export function fmtDateTime(iso?: string): string {
+  if (!iso) return '-'
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return '-'
+  return d.toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  })
+}
+
+/** Trim the noisy `claude-` prefix and trailing date stamp off a model id for
+    compact display, e.g. "claude-opus-4-5-20251101" -> "opus-4-5". */
+export function shortModel(m: string): string {
+  return m.replace(/^claude-/, '').replace(/-\d{6,}$/, '')
+}
+
+/** Format an hour-of-day (0-23) as a wall-clock label, e.g. 12 -> "12:00". */
+export function formatHour(h: number): string {
+  return `${String(h).padStart(2, '0')}:00`
 }

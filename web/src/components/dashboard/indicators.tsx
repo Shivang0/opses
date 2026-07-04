@@ -16,7 +16,7 @@ const riskFill: Record<RiskLevel, string> = {
   low: 'bg-ok',
 }
 
-/** Compact risk meter — colored track + numeric score, exposed as an ARIA meter. */
+/** Compact risk meter - colored track + numeric score, exposed as an ARIA meter. */
 export function RiskMeter({ score, className }: { score: number; className?: string }) {
   const level = riskLevel(score)
   return (

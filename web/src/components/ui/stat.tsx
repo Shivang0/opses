@@ -22,7 +22,7 @@ export interface StatProps extends React.HTMLAttributes<HTMLDivElement> {
   delta?: React.ReactNode
   /** Direction arrow shown before the delta. */
   trend?: StatTrend
-  /** Colour of the delta — decoupled from arrow direction (more findings = bad). */
+  /** Colour of the delta - decoupled from arrow direction (more findings = bad). */
   tone?: StatTone
   /** Optional supporting caption below the value. */
   hint?: React.ReactNode
@@ -30,7 +30,7 @@ export interface StatProps extends React.HTMLAttributes<HTMLDivElement> {
   icon?: React.ReactNode
 }
 
-/** Stat — KPI tile. Mono tabular value, quiet mono-eyebrow label, hairline surface. */
+/** Stat - KPI tile. Mono tabular value, quiet mono-eyebrow label, hairline surface. */
 export const Stat = React.forwardRef<HTMLDivElement, StatProps>(
   ({ className, label, value, delta, trend, tone = 'neutral', hint, icon, ...props }, ref) => {
     const TrendIcon = trend ? trendIcon[trend] : null

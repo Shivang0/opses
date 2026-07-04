@@ -14,7 +14,7 @@ export interface PageHeaderProps extends Omit<React.HTMLAttributes<HTMLDivElemen
 }
 
 /**
- * PageHeader — the title block at the top of a console page. Oversized Fraunces
+ * PageHeader - the title block at the top of a console page. Oversized Fraunces
  * title (via the h1 default face). Stacks on mobile, splits title/actions on
  * wider screens.
  */

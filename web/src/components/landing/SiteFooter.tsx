@@ -6,7 +6,7 @@ const FOOTER_LINKS = [
   { href: '#compliance', label: 'Compliance' },
 ]
 
-/** SiteFooter — minimal, mono. Hairline top border, wordmark, links, copyright. */
+/** SiteFooter - minimal, mono. Hairline top border, wordmark, links, copyright. */
 export default function SiteFooter() {
   return (
     <footer className="border-t border-line px-6 py-12">

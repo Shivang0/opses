@@ -4,7 +4,7 @@ import { Section, Eyebrow, buttonVariants } from '../ui'
 import { Reveal } from './Reveal'
 
 /**
- * FinalCta — closing call to action with a soft amber glow and the primary route
+ * FinalCta - closing call to action with a soft amber glow and the primary route
  * into the console.
  */
 export default function FinalCta() {
@@ -23,7 +23,7 @@ export default function FinalCta() {
           Govern your agents. Keep your data.
         </h2>
         <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-muted">
-          See the console the same way a CISO does — live coverage, findings and framework evidence,
+          See the console the same way a CISO does - live coverage, findings and framework evidence,
           all from data that never left the building.
         </p>
         <div className="mt-10 flex flex-wrap items-center justify-center gap-3">

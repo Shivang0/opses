@@ -15,7 +15,7 @@ const FRAMEWORKS: Framework[] = [
     icon: ShieldCheck,
     code: 'EU · 2024/1689',
     title: 'EU AI Act',
-    body: 'High-risk obligations for AI in the software lifecycle — logging, transparency and human oversight, evidenced continuously.',
+    body: 'High-risk obligations for AI in the software lifecycle - logging, transparency and human oversight, evidenced continuously.',
   },
   {
     icon: BadgeCheck,
@@ -27,7 +27,7 @@ const FRAMEWORKS: Framework[] = [
     icon: Layers,
     code: 'NIST · AI RMF 1.0',
     title: 'NIST AI RMF',
-    body: 'Govern, map, measure and manage — bound to concrete controls over every prompt that crosses your network.',
+    body: 'Govern, map, measure and manage - bound to concrete controls over every prompt that crosses your network.',
   },
 ]
 

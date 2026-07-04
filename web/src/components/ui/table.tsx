@@ -2,7 +2,7 @@ import * as React from 'react'
 import { cn } from '../../lib/utils'
 
 /**
- * Table primitives — transparent, dense, accessible <table> semantics with
+ * Table primitives - transparent, dense, accessible <table> semantics with
  * hairline row borders and a mono-eyebrow header. The root wraps the table in a
  * horizontally scrollable region so wide tables never break the mobile layout.
  */

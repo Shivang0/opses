@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// OPSES capture agent — runs on an employee machine.
+// OPSES capture agent - runs on an employee machine.
 // Reads local Claude Code transcripts (+ best-effort Cursor), normalizes usage,
 // masks secrets/PII locally, and POSTs to the in-house OPSES server.
 // Zero external deps (Node >= 20). Historical sync + real-time watch.
@@ -88,8 +88,16 @@ function parseSession(file) {
   if (!objs.length) return null
 
   let sessionId = null, cwd = null, version = null, gitBranch = null, first = null, last = null
-  let tokensIn = 0, cacheRead = 0, tokensOut = 0, cost = 0, prompts = 0, responses = 0
-  const models = new Set(), events = [], leaks = []
+  let tokensIn = 0, cacheRead = 0, tokensOut = 0, cost = 0, prompts = 0, responses = 0, realPrompts = 0
+  const modelCounts = new Map(), events = [], leaks = [], toolCalls = []
+  // Short, masked summary of a tool call's target - the file / command / query it
+  // acted on, never the full content. Governance sees the ACTION, not the payload.
+  const toolArg = (input) => {
+    if (!input || typeof input !== 'object') return ''
+    const pick = input.file_path || input.path || input.command || input.pattern || input.url || input.query || input.notebook_path
+    if (pick) return mask(String(pick)).slice(0, 80)
+    return Object.keys(input).slice(0, 3).join(', ')
+  }
 
   for (const o of objs) {
     sessionId ||= o.sessionId
@@ -101,6 +109,7 @@ function parseSession(file) {
 
     if (o.type === 'user' && !o.isMeta) {
       prompts++
+      if (!o.isSidechain) realPrompts++ // human turns only (subagent turns are sidechains)
       const text = extractText(o.message?.content)
       const found = detectSecrets(text)
       if (found.length) leaks.push({ ts: o.timestamp, kinds: found })
@@ -115,10 +124,26 @@ function parseSession(file) {
       const outp = u.output_tokens || 0
       tokensIn += newIn; cacheRead += cr; tokensOut += outp
       const model = o.message?.model || 'unknown'
-      models.add(model)
-      cost += costUSD(model, newIn + cr, cr, outp) // cost still bills cache reads at ~0.1x
+      // '<synthetic>' is Claude Code's own injected (non-inference) messages, not a
+      // real model - keep it out of the session's model list so the real model leads.
+      if (model !== '<synthetic>') modelCounts.set(model, (modelCounts.get(model) || 0) + 1)
+      // bill fresh input at 1x, cache writes at 1.25x, cache reads at 0.1x, output at 1x
+      cost += costUSD(model, {
+        input: u.input_tokens || 0,
+        cacheWrite: u.cache_creation_input_tokens || 0,
+        cacheRead: cr,
+        output: outp,
+      })
       if (events.length < 50)
         events.push({ role: 'assistant', ts: o.timestamp, model, out: outp, textPreview: mask(extractText(o.message?.content)).slice(0, 280) })
+      const content = o.message?.content
+      if (Array.isArray(content)) {
+        for (const b of content) {
+          if (b?.type === 'tool_use' && b.name && toolCalls.length < 120) {
+            toolCalls.push({ name: b.name, arg: toolArg(b.input), ts: o.timestamp })
+          }
+        }
+      }
     }
   }
 
@@ -127,9 +152,9 @@ function parseSession(file) {
     id: sessionId, tool: 'Claude Code', project: projectName(cwd, file), cwd, gitBranch, version,
     startedAt: first ? new Date(first).toISOString() : null,
     endedAt: last ? new Date(last).toISOString() : null,
-    prompts, responses, messages: prompts + responses,
+    prompts, responses, realPrompts, messages: prompts + responses,
     tokensIn, cacheRead, tokensOut, costUSD: Number(cost.toFixed(4)),
-    models: [...models], leaks, events,
+    models: [...modelCounts.entries()].sort((a, b) => b[1] - a[1]).map(([m]) => m), leaks, events, toolCalls,
   }
 }
 
@@ -184,11 +209,22 @@ function totalsFrom(sessions) {
 
 // ---------- scan + build payload ----------
 function scanClaude() {
+  // Skip background-agent instances (e.g. the claude-mem observer spins up its own
+  // Claude Code on Sonnet to watch the main session). Those are tooling, not the
+  // developer's coding, and would otherwise inflate model / token / cost usage and
+  // surface as the "latest session".
+  const EXCLUDE = /claude-mem/i
   const files = walk(CLAUDE_PROJECTS)
   const bySession = new Map()
   for (const f of files) {
+    // agent-*.jsonl are Task-tool subagent transcripts (fully sidechain), not sessions.
+    if (EXCLUDE.test(f) || path.basename(f).startsWith('agent-')) continue
     const s = parseSession(f)
     if (!s || s.messages === 0) continue
+    if (s.cwd && EXCLUDE.test(s.cwd)) continue
+    // Real conversations have back-and-forth; drop single-turn queue-operation stubs
+    // and any sidechain-only transcript (< 2 human prompts).
+    if ((s.realPrompts || 0) < 2) continue
     const prev = bySession.get(s.id)
     if (!prev || s.events.length > prev.events.length) bySession.set(s.id, s)
   }
@@ -213,7 +249,7 @@ function buildPayload() {
   }
 }
 
-// one-shot reachability check before the first sync — catches a mistyped or
+// one-shot reachability check before the first sync - catches a mistyped or
 // unreachable OPSES_SERVER (e.g. a stale tunnel URL) with a clear message
 // instead of a confusing hang or a bare fetch error.
 async function checkConnectivity() {

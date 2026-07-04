@@ -1,7 +1,7 @@
 import { cn } from '../../lib/utils'
 
 /**
- * HeroMotif — an abstract "situation room" radar built from hairlines: concentric
+ * HeroMotif - an abstract "situation room" radar built from hairlines: concentric
  * rings, a crosshair grid, a slow amber sweep and a few signal blips. Purely
  * decorative (aria-hidden); the sweep/ping stop under prefers-reduced-motion via
  * the global rule in index.css.

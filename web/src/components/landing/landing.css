@@ -1,15 +1,161 @@
-/* OPSES landing — motion + atmosphere helpers.
+/* OPSES landing - motion + atmosphere helpers.
    All color/tokens come from index.css @theme (no hardcoded hex here).
    Every animation below is neutralized by the global prefers-reduced-motion
    rule in index.css (it zeroes animation/transition durations). */
 
+/* ---------- emerald marketing theme (landing only) ----------
+   Deep-forest field + electric-lime accent. Scoped to the landing wrapper so it
+   reskins every section (which all reference var(--color-*)) without touching the
+   product console, which keeps its near-black + amber identity. */
+.opses-emerald {
+  --color-ink: #062018;
+  --color-ink-2: #0a2b20;
+  --color-surface: #0d3325;
+  --color-surface-2: #154031;
+  --color-line: #1d4a39;
+  --color-line-soft: #143a2c;
+  --color-paper: #eafaf1;
+  --color-muted: #9fc9b2;
+  --color-subtle: #74a68f;
+  --color-accent: #b4f11d; /* electric lime */
+  --color-accent-fg: #0a2a12; /* dark text on lime */
+  --color-accent-2: #4fe3b6; /* mint - secondary data series */
+  background: var(--color-ink);
+}
+/* isometric blueprint grid that bleeds under the hero */
+.opses-blueprint {
+  background-image:
+    linear-gradient(transparent 0, transparent calc(100% - 1px), color-mix(in oklab, var(--color-accent) 8%, transparent) 100%),
+    linear-gradient(90deg, transparent 0, transparent calc(100% - 1px), color-mix(in oklab, var(--color-accent) 6%, transparent) 100%);
+  background-size: 46px 46px;
+  mask-image: radial-gradient(120% 80% at 50% 12%, #000 30%, transparent 78%);
+  animation: opses-grid-drift 6s linear infinite; /* seamless upward drift (grid = bg-size) */
+}
+@keyframes opses-grid-drift {
+  to {
+    background-position: 0 -46px;
+  }
+}
+.opses-iso-line {
+  fill: none;
+  stroke: color-mix(in oklab, var(--color-accent) 34%, transparent);
+}
+.opses-iso-face {
+  fill: color-mix(in oklab, var(--color-accent) 9%, transparent);
+  stroke: color-mix(in oklab, var(--color-accent) 45%, transparent);
+}
+.opses-iso-core {
+  fill: color-mix(in oklab, var(--color-accent) 22%, transparent);
+  stroke: var(--color-accent);
+}
+.opses-iso-node {
+  fill: var(--color-accent);
+}
+.opses-iso-node--mint {
+  fill: var(--color-accent-2);
+}
+/* gentle independent vertical float on the isometric blocks (potpie-style).
+   Per-element duration/delay come from inline styles for a layered, organic drift.
+   The global prefers-reduced-motion rule in index.css zeroes these. */
+@keyframes opses-iso-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+.opses-iso-sat,
+.opses-iso-core-g {
+  animation-name: opses-iso-bob;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+/* central chip rises off its socket, then descends to dock (potpie-style) */
+@keyframes opses-levitate {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-40px);
+  }
+}
+/* the light column between chip + socket brightens as the chip lifts */
+@keyframes opses-beam-pulse {
+  0%,
+  100% {
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+.opses-chip {
+  animation: opses-levitate 3.8s ease-in-out infinite;
+  will-change: transform;
+}
+.opses-beam {
+  animation: opses-beam-pulse 3.8s ease-in-out infinite;
+  will-change: opacity;
+}
+.opses-iso-label {
+  fill: color-mix(in oklab, var(--color-accent) 78%, var(--color-paper));
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+.opses-iso-pin {
+  stroke: var(--color-accent);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+/* a data pulse that travels a connector line toward the core */
+@keyframes opses-iso-flow {
+  0% {
+    offset-distance: 0%;
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    offset-distance: 100%;
+    opacity: 0;
+  }
+}
+.opses-iso-pulse {
+  fill: var(--color-accent);
+  animation: opses-iso-flow 3.2s linear infinite;
+  will-change: offset-distance, opacity;
+}
+/* lime marker-highlight behind a headline phrase */
+.opses-mark {
+  color: var(--color-accent);
+  position: relative;
+  white-space: nowrap;
+}
+.opses-mark::before {
+  content: '';
+  position: absolute;
+  inset: 0.12em -0.18em 0.1em;
+  background: color-mix(in oklab, var(--color-accent) 16%, transparent);
+  border-radius: 0.2em;
+  z-index: -1;
+}
+
 /* ---------- scroll reveal (IntersectionObserver, once) ---------- */
 .opses-reveal {
   opacity: 0;
-  transform: translateY(1.75rem);
+  transform: translateY(1.5rem);
   transition:
-    opacity 0.7s cubic-bezier(0.2, 0.8, 0.2, 1),
-    transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+    opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .opses-reveal.is-in {
   opacity: 1;
@@ -22,22 +168,26 @@
 }
 .opses-anim .opses-fade {
   opacity: 0;
-  transform: translateY(1rem);
-  animation: opses-fade-in 0.85s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  transform: translateY(0.9rem);
+  animation: opses-fade-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
+/* Symmetric vertical room so wrapped display glyphs (ascenders + descenders)
+   are never clipped by overflow:hidden; negative margins keep the line rhythm. */
 .opses-line-mask {
   overflow: hidden;
-  padding-bottom: 0.14em;
-  margin-bottom: -0.14em;
+  padding-top: 0.12em;
+  padding-bottom: 0.18em;
+  margin-top: -0.12em;
+  margin-bottom: -0.18em;
 }
 .opses-line {
   display: inline-block;
   will-change: transform, opacity;
 }
 .opses-anim .opses-line {
-  transform: translateY(110%);
+  transform: translateY(108%);
   opacity: 0;
-  animation: opses-line-in 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation: opses-line-in 0.72s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 @keyframes opses-fade-in {
   to {

@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../../lib/utils'
 
 /**
- * Button — cinematic-editorial. One confident amber primary, a hairline
+ * Button - cinematic-editorial. One confident amber primary, a hairline
  * secondary/outline, and a quiet ghost. Focus is handled by the global
  * :focus-visible accent outline (see index.css); motion is gated by
  * prefers-reduced-motion globally.
@@ -29,6 +29,7 @@ export const buttonVariants = cva(
       size: {
         sm: 'h-8 px-3 text-sm [&_svg]:size-4',
         md: 'h-10 px-4 text-sm [&_svg]:size-[18px]',
+        lg: 'h-12 px-6 text-[0.95rem] [&_svg]:size-[18px]',
       },
     },
     defaultVariants: { variant: 'primary', size: 'md' },

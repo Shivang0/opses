@@ -2,7 +2,7 @@ import * as React from 'react'
 import { cn } from '../../lib/utils'
 
 /**
- * Card surface — cinematic-editorial: surface fill, 1px hairline border, xl
+ * Card surface - cinematic-editorial: surface fill, 1px hairline border, xl
  * radius, and a faint inset top ring instead of a drop shadow. Compose with
  * the parts below.
  */

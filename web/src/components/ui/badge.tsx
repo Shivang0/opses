@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../../lib/utils'
 
 /**
- * Badge — compact status pill on the dark theme. Severity variants use the
+ * Badge - compact status pill on the dark theme. Severity variants use the
  * severity token at low-alpha tint + full-strength text and ring; neutral is a
  * quiet surface chip. Keys line up with the app's Severity union
  * ('high' | 'medium' | 'low') plus status tones, so you can drive it straight

@@ -1,6 +1,6 @@
 @import 'tailwindcss';
 
-/* OPSES — "cinematic editorial security" dark theme. See /design.md.
+/* OPSES - "cinematic editorial security" dark theme. See /design.md.
    Fraunces (display) + Hanken Grotesk (UI) + JetBrains Mono (data). Warm amber accent,
    near-black ink base, hairline structure, grain + hero glow. No Inter, no purple, no emoji. */
 @theme {
@@ -17,14 +17,14 @@
   --color-line-soft: #1c1d22;
 
   /* text (AA on ink & surface) */
-  --color-paper: #f3f0e9; /* primary text — warm paper white */
+  --color-paper: #f3f0e9; /* primary text - warm paper white */
   --color-muted: #a6a19a; /* secondary ~7:1 */
   --color-subtle: #928e86; /* tertiary / labels ~5:1 */
 
-  /* accent — used sparingly */
+  /* accent - used sparingly */
   --color-accent: #e6b450; /* amber / gold */
   --color-accent-fg: #201700; /* text on amber */
-  --color-accent-2: #7dd3c0; /* cool mint — secondary data series only */
+  --color-accent-2: #7dd3c0; /* cool mint - secondary data series only */
 
   /* severity (bright for dark bg) */
   --color-danger: #ff6b61;
@@ -90,6 +90,23 @@ body::after {
 }
 .tnum {
   font-variant-numeric: tabular-nums;
+}
+
+/* thin, on-theme scrollbar for internal scroll regions (e.g. the sidebar nav) */
+.opses-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line) transparent;
+}
+.opses-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.opses-scroll::-webkit-scrollbar-thumb {
+  background: var(--color-line);
+  border-radius: 9999px;
+}
+.opses-scroll::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 @media (prefers-reduced-motion: reduce) {

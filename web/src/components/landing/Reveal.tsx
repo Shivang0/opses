@@ -18,7 +18,7 @@ function initialShown() {
 }
 
 /**
- * useReveal — attach `ref` to any element and toggle the `.opses-reveal` /
+ * useReveal - attach `ref` to any element and toggle the `.opses-reveal` /
  * `.is-in` classes off `shown`. Reveals once, then disconnects. Respects
  * prefers-reduced-motion (shows immediately, no transition).
  */
@@ -73,7 +73,7 @@ type RevealProps = HTMLAttributes<HTMLDivElement> & {
   delay?: number
 }
 
-/** Reveal — a div that fades + rises into view once on scroll. */
+/** Reveal - a div that fades + rises into view once on scroll. */
 export function Reveal({ className, delay, style, children, ...rest }: RevealProps) {
   const { ref, shown } = useReveal<HTMLDivElement>()
   return (

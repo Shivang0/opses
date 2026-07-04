@@ -2,9 +2,25 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import {
   BadgeCheck,
+  Bot,
+  CreditCard,
+  Database,
+  FileDown,
+  FileText,
+  FolderKanban,
+  GitCompare,
   LayoutDashboard,
+  FileStack,
+  Gauge,
+  LineChart,
   Lock,
   Menu,
+  MessageSquare,
+  Plug,
+  Radio,
+  Receipt,
+  Server,
+  Settings2,
   ShieldAlert,
   ShieldCheck,
   Users,
@@ -20,19 +36,56 @@ interface NavEntry {
   icon: ReactNode
   end?: boolean
 }
+interface NavGroup {
+  heading: string
+  items: NavEntry[]
+}
 
-const NAV: NavEntry[] = [
-  { to: '/dashboard', label: 'Overview', icon: <LayoutDashboard />, end: true },
-  { to: '/dashboard/developers', label: 'Developers', icon: <Users /> },
-  { to: '/dashboard/findings', label: 'Findings', icon: <ShieldAlert /> },
-  { to: '/dashboard/compliance', label: 'Compliance', icon: <BadgeCheck /> },
+const NAV: NavGroup[] = [
+  {
+    heading: 'Analytics',
+    items: [
+      { to: '/dashboard', label: 'Dashboard', icon: <LayoutDashboard />, end: true },
+      { to: '/dashboard/sessions', label: 'Sessions', icon: <MessageSquare /> },
+      { to: '/dashboard/costs', label: 'Costs', icon: <Receipt /> },
+      { to: '/dashboard/projects', label: 'Projects', icon: <FolderKanban /> },
+      { to: '/dashboard/analytics', label: 'Deep Analysis', icon: <LineChart /> },
+      { to: '/dashboard/compare', label: 'Compare', icon: <GitCompare /> },
+    ],
+  },
+  {
+    heading: 'Oversight',
+    items: [
+      { to: '/dashboard/developers', label: 'Developers', icon: <Users /> },
+      { to: '/dashboard/findings', label: 'Findings', icon: <ShieldAlert /> },
+      { to: '/dashboard/mcps', label: 'MCP Registry', icon: <Server /> },
+      { to: '/dashboard/context', label: 'Context Files', icon: <FileStack /> },
+      { to: '/dashboard/posture', label: 'Posture', icon: <Gauge /> },
+      { to: '/dashboard/compliance', label: 'Compliance', icon: <BadgeCheck /> },
+      { to: '/dashboard/reports', label: 'Reports', icon: <FileText /> },
+      { to: '/dashboard/evidence-query', label: 'Evidence Query', icon: <Database /> },
+      { to: '/dashboard/evidence-pack', label: 'Evidence Pack', icon: <FileDown /> },
+      { to: '/dashboard/copilot', label: 'Copilot', icon: <Bot /> },
+    ],
+  },
+  {
+    heading: 'Connect',
+    items: [
+      { to: '/dashboard/subscriptions', label: 'Subscriptions', icon: <CreditCard /> },
+      { to: '/dashboard/connections', label: 'Connections', icon: <Plug /> },
+      { to: '/dashboard/relay', label: 'Relay', icon: <Radio /> },
+      { to: '/dashboard/settings', label: 'Data controls', icon: <Settings2 /> },
+    ],
+  },
 ]
 
+const NAV_ITEMS = NAV.flatMap((g) => g.items)
+
 function titleForPath(path: string): string {
-  if (path.startsWith('/dashboard/developers')) return 'Developers'
-  if (path.startsWith('/dashboard/findings')) return 'Findings'
-  if (path.startsWith('/dashboard/compliance')) return 'Compliance'
-  return 'Overview'
+  const match = NAV_ITEMS.filter((i) => (i.end ? path === i.to : path.startsWith(i.to))).sort(
+    (a, b) => b.to.length - a.to.length,
+  )[0]
+  return match?.label ?? 'Dashboard'
 }
 
 function Brand() {
@@ -43,7 +96,7 @@ function Brand() {
       </span>
       <div className="leading-tight">
         <p className="font-mono text-sm font-semibold tracking-[0.2em] text-paper">OPSES</p>
-        <p className="text-xs text-subtle">Governance console</p>
+        <p className="text-xs text-subtle">Agent intelligence</p>
       </div>
     </div>
   )
@@ -51,16 +104,21 @@ function Brand() {
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   return (
-    <nav aria-label="Primary" className="flex flex-1 flex-col gap-1">
-      {NAV.map((item) => (
-        <SidebarItem
-          key={item.to}
-          to={item.to}
-          end={item.end}
-          icon={item.icon}
-          label={item.label}
-          onClick={onNavigate}
-        />
+    <nav aria-label="Primary" className="flex flex-1 flex-col gap-5">
+      {NAV.map((group) => (
+        <div key={group.heading} className="flex flex-col gap-1">
+          <p className="mono-eyebrow px-3 pb-1">{group.heading}</p>
+          {group.items.map((item) => (
+            <SidebarItem
+              key={item.to}
+              to={item.to}
+              end={item.end}
+              icon={item.icon}
+              label={item.label}
+              onClick={onNavigate}
+            />
+          ))}
+        </div>
       ))}
     </nav>
   )
@@ -70,7 +128,7 @@ function SidebarFooter() {
   return (
     <div className="rounded-lg border border-line bg-surface p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
       <p className="mono-eyebrow">Tenant</p>
-      <p className="mt-1 text-xs font-semibold text-paper">Acme Corp</p>
+      <p className="mt-1 text-xs font-semibold text-paper">Cerebral Valley</p>
       <p className="mt-0.5 text-xs text-subtle">Self-hosted deployment</p>
     </div>
   )
@@ -80,13 +138,13 @@ function SecurePill() {
   return (
     <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface-2 px-2.5 py-1 text-xs font-medium text-muted">
       <Lock className="size-3.5 text-accent" aria-hidden="true" />
-      <span className="hidden sm:inline">In-house — nothing leaves the building</span>
+      <span className="hidden sm:inline">In-house - nothing leaves the building</span>
       <span className="sm:hidden">In-house</span>
     </span>
   )
 }
 
-/** Live-connection indicator — green dot when streaming from the server, a muted
+/** Live-connection indicator - green dot when streaming from the server, a muted
     pill when rendering from the bundled sample dataset. */
 function ConnectionPill() {
   const { status } = useOpses()
@@ -107,7 +165,7 @@ function ConnectionPill() {
   return (
     <span
       title={
-        status === 'loading' ? 'Connecting to the server…' : 'Server unreachable — showing sample data'
+        status === 'loading' ? 'Connecting to the server...' : 'Server unreachable - showing sample data'
       }
       className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface-2 px-2.5 py-1 font-mono text-[0.7rem] font-medium uppercase tracking-[0.1em] text-muted"
     >
@@ -140,10 +198,14 @@ export default function DashboardLayout() {
     <div className="flex min-h-screen bg-ink text-paper">
       {/* Desktop rail */}
       <Sidebar className="sticky top-0 hidden h-screen lg:flex">
-        <Brand />
-        <div className="mt-3 flex flex-1 flex-col">
-          <NavLinks />
-          <div className="mt-auto pt-3">
+        <div className="shrink-0">
+          <Brand />
+        </div>
+        <div className="mt-3 flex min-h-0 flex-1 flex-col">
+          <div className="opses-scroll -mr-1 min-h-0 flex-1 overflow-y-auto pr-1">
+            <NavLinks />
+          </div>
+          <div className="shrink-0 pt-3">
             <SidebarFooter />
           </div>
         </div>
@@ -172,7 +234,7 @@ export default function DashboardLayout() {
           )}
         >
           <Sidebar role="dialog" aria-modal="true" aria-label="Navigation" className="h-full">
-            <div className="flex items-center justify-between">
+            <div className="flex shrink-0 items-center justify-between">
               <Brand />
               <button
                 type="button"
@@ -183,9 +245,11 @@ export default function DashboardLayout() {
                 <X className="size-5" aria-hidden="true" />
               </button>
             </div>
-            <div className="mt-3 flex flex-1 flex-col">
-              <NavLinks onNavigate={() => setNavOpen(false)} />
-              <div className="mt-auto pt-3">
+            <div className="mt-3 flex min-h-0 flex-1 flex-col">
+              <div className="opses-scroll -mr-1 min-h-0 flex-1 overflow-y-auto pr-1">
+                <NavLinks onNavigate={() => setNavOpen(false)} />
+              </div>
+              <div className="shrink-0 pt-3">
                 <SidebarFooter />
               </div>
             </div>

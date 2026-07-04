@@ -12,12 +12,12 @@ type Step = {
 }
 
 const STEPS: Step[] = [
-  { icon: Radio, label: 'Capture', desc: 'Intercept agent traffic on your own network.' },
-  { icon: EyeOff, label: 'Mask', desc: 'Strip secrets, tokens and PII before anything moves.' },
-  { icon: Lock, label: 'Encrypt', desc: 'Seal the payload in transit, end to end.' },
-  { icon: Waypoints, label: 'Relay', desc: 'Route only to the in-house governance engine.' },
-  { icon: Cpu, label: 'Gemma', desc: 'Review runs on a model you host — locally.', highlight: true },
-  { icon: ScrollText, label: 'Cited report', desc: 'Evidence-linked findings, ready to defend.' },
+  { icon: Radio, label: 'Capture', desc: 'Intercept every coding-agent prompt on your own network.' },
+  { icon: EyeOff, label: 'Mask', desc: 'Strip secrets, tokens and PII on the machine, before anything moves.' },
+  { icon: Lock, label: 'Cloudflare tunnel', desc: 'Sealed end to end and tunneled over Cloudflare, zero-knowledge.' },
+  { icon: Waypoints, label: 'Relay', desc: 'Routed only to the in-house governance engine, never a vendor.' },
+  { icon: Cpu, label: 'Gemma 4', desc: 'Reviewed by Gemma 4 on a model you host, on-device.', highlight: true },
+  { icon: ScrollText, label: 'Cited report', desc: 'Evidence-linked findings mapped to EU AI Act, ISO 42001 and NIST.' },
 ]
 
 function IconBox({ step }: { step: Step }) {
@@ -65,12 +65,12 @@ export default function PipelineSection() {
       <Reveal className="max-w-2xl">
         <Eyebrow>How it works</Eyebrow>
         <h2 className="mt-4 text-3xl font-medium text-paper sm:text-4xl">
-          From prompt to cited report — without egress.
+          From prompt to cited report - without egress.
         </h2>
         <p className="mt-5 text-lg leading-relaxed text-muted">
-          A single one-way pipeline runs entirely inside your perimeter. Sensitive context is
-          masked at the source and reviewed by a local model; nothing sensitive is ever relayed to a
-          vendor.
+          A single one-way pipeline runs entirely inside your perimeter: secrets are masked on the
+          machine, streamed over a Cloudflare zero-knowledge tunnel, and reviewed by Gemma 4 on a
+          model you host. Nothing sensitive is ever relayed to a vendor.
         </p>
       </Reveal>
 

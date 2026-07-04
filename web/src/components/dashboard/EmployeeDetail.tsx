@@ -1,19 +1,20 @@
 import { useId, useState } from 'react'
-import { AlertTriangle, ChevronDown, ChevronRight, Loader2, ShieldCheck } from 'lucide-react'
-import { Badge } from '../ui'
+import { AlertTriangle, ChevronDown, ChevronRight, Loader2, ShieldCheck, Sparkles } from 'lucide-react'
+import { Badge, Button } from '../ui'
 import { RiskBadge } from './indicators'
 import { severityLabel } from './meta'
 import { cn, formatCompact, formatUSD } from '../../lib/utils'
 import { useEmployeeDetail, type DevRow, type ViewFinding } from '../../lib/useOpses'
-import type { ApiSession, ApiTool } from '../../lib/api'
+import { evaluateEmployee } from '../../lib/api'
+import type { ApiSession, ApiTool, ApiEmployeeDetail, GemmaResult } from '../../lib/api'
 
 // ---------------------------------------------------------------------------
 // Formatting helpers
 // ---------------------------------------------------------------------------
 function fmtWhen(iso?: string): string {
-  if (!iso) return '—'
+  if (!iso) return '-'
   const d = new Date(iso)
-  if (Number.isNaN(d.getTime())) return '—'
+  if (Number.isNaN(d.getTime())) return '-'
   return d.toLocaleString('en-US', {
     month: 'short',
     day: 'numeric',
@@ -114,7 +115,7 @@ function SessionRow({ session }: { session: ApiSession }) {
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block text-xs leading-relaxed text-muted">
-                      {ev.textPreview || '—'}
+                      {ev.textPreview || '-'}
                     </span>
                     <span className="mt-0.5 flex flex-wrap gap-x-2 font-mono text-[10px] text-subtle">
                       {ev.model && <span>{shortModel(ev.model)}</span>}
@@ -133,7 +134,7 @@ function SessionRow({ session }: { session: ApiSession }) {
 }
 
 // ---------------------------------------------------------------------------
-// Claude Code tab — totals + real sessions, newest first.
+// Claude Code tab - totals + real sessions, newest first.
 // ---------------------------------------------------------------------------
 function ClaudeCodeTab({ tool }: { tool: ApiTool }) {
   const sessions = [...(tool.sessions ?? [])].sort((a, b) =>
@@ -216,7 +217,7 @@ function ClaudeCodeTab({ tool }: { tool: ApiTool }) {
 }
 
 // ---------------------------------------------------------------------------
-// Cursor tab — surfaces the connection note (not installed / connect hook).
+// Cursor tab - surfaces the connection note (not installed / connect hook).
 // ---------------------------------------------------------------------------
 function CursorTab({ tool }: { tool: ApiTool }) {
   return (
@@ -246,6 +247,77 @@ function FindingRow({ finding, onOpen }: { finding: ViewFinding; onOpen: () => v
         className="size-4 shrink-0 text-subtle transition-transform group-hover:translate-x-0.5"
       />
     </button>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Gemma assessment - evaluate the employee's *entire* captured usage on-device.
+// This is the CISO's "read all the data, then have the local model weigh in" step.
+// ---------------------------------------------------------------------------
+function GemmaAssessment({ detail }: { detail: ApiEmployeeDetail }) {
+  const [state, setState] = useState<{
+    status: 'idle' | 'loading' | 'done' | 'error'
+    result: GemmaResult | null
+  }>({ status: 'idle', result: null })
+
+  const run = () => {
+    setState({ status: 'loading', result: null })
+    evaluateEmployee(detail)
+      .then((result) => setState({ status: 'done', result }))
+      .catch(() => setState({ status: 'error', result: null }))
+  }
+
+  return (
+    <div className="rounded-xl border border-line bg-ink/40 p-4">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h3 className="flex items-center gap-1.5 text-sm font-semibold text-paper">
+            <Sparkles className="size-4 text-accent" aria-hidden="true" />
+            Gemma assessment
+          </h3>
+          <p className="mt-1 text-xs text-muted">
+            Evaluate this employee&apos;s full AI usage on-device. Nothing leaves the building.
+          </p>
+        </div>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={run}
+          disabled={state.status === 'loading'}
+        >
+          {state.status === 'loading' ? (
+            <>
+              <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+              Evaluating
+            </>
+          ) : (
+            <>
+              <Sparkles className="size-4" aria-hidden="true" />
+              {state.status === 'done' ? 'Re-evaluate' : 'Evaluate with Gemma'}
+            </>
+          )}
+        </Button>
+      </div>
+
+      {state.status === 'error' && (
+        <p className="mt-3 text-sm text-warn">
+          The local model could not be reached. Make sure the Gemma server is running, then try again.
+        </p>
+      )}
+      {state.status === 'done' && state.result && (
+        <div className="mt-3 rounded-lg border border-line bg-ink px-3 py-3">
+          <p className="whitespace-pre-wrap text-sm leading-relaxed text-paper">
+            {state.result.text}
+          </p>
+          {state.result.source === 'gemma' && (
+            <p className="mt-2.5 flex items-center gap-1.5 font-mono text-xs text-subtle">
+              <span aria-hidden="true" className="inline-block size-1.5 rounded-full bg-ok" />
+              Generated on-device by local Gemma
+            </p>
+          )}
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -358,19 +430,22 @@ export function EmployeeDetail({
         ))}
       </dl>
 
+      {/* Gemma assessment - available once the full detail has streamed in */}
+      {status === 'live' && detail && <GemmaAssessment detail={detail} />}
+
       {/* Tools drill-down */}
       <div>
         <h3 className="mono-eyebrow mb-3">Tools</h3>
         {status === 'loading' && (
           <div className="flex items-center gap-2 rounded-xl border border-line bg-ink/40 p-4 text-sm text-muted">
             <Loader2 className="size-4 animate-spin" aria-hidden="true" />
-            Loading session detail…
+            Loading session detail...
           </div>
         )}
         {status === 'live' && detail && <ToolTabs tools={detail.tools} />}
         {status === 'unavailable' && (
           <div className="rounded-xl border border-line bg-ink/40 p-4 text-sm text-muted">
-            Session-level detail streams from the in-house server. It’s unavailable right now —
+            Session-level detail streams from the in-house server. It is unavailable right now -
             showing the summary above.
           </div>
         )}
@@ -391,7 +466,7 @@ export function EmployeeDetail({
         ) : (
           <div className="flex items-center gap-3 rounded-xl border border-ok/25 bg-ok/15 p-4 text-sm text-ok">
             <ShieldCheck className="size-5 shrink-0" aria-hidden="true" />
-            No open findings — this developer is clean.
+            No open findings - this developer is clean.
           </div>
         )}
       </div>
