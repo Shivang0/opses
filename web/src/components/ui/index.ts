@@ -1,0 +1,10 @@
+// Barrel for the OPSES UI kit — import primitives from one place:
+//   import { Button, Card, Badge, Stat, Table } from '../../components/ui'
+export * from './button'
+export * from './card'
+export * from './badge'
+export * from './stat'
+export * from './table'
+export * from './sidebar'
+export * from './page-header'
+export * from './section'

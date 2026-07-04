@@ -1,0 +1,223 @@
+import { useEffect, useState, type ReactNode } from 'react'
+import { Outlet, useLocation } from 'react-router-dom'
+import {
+  BadgeCheck,
+  LayoutDashboard,
+  Lock,
+  Menu,
+  ShieldAlert,
+  ShieldCheck,
+  Users,
+  X,
+} from 'lucide-react'
+import { Sidebar, SidebarItem } from '../ui'
+import { cn } from '../../lib/utils'
+import { useOpses } from '../../lib/useOpses'
+
+interface NavEntry {
+  to: string
+  label: string
+  icon: ReactNode
+  end?: boolean
+}
+
+const NAV: NavEntry[] = [
+  { to: '/dashboard', label: 'Overview', icon: <LayoutDashboard />, end: true },
+  { to: '/dashboard/developers', label: 'Developers', icon: <Users /> },
+  { to: '/dashboard/findings', label: 'Findings', icon: <ShieldAlert /> },
+  { to: '/dashboard/compliance', label: 'Compliance', icon: <BadgeCheck /> },
+]
+
+function titleForPath(path: string): string {
+  if (path.startsWith('/dashboard/developers')) return 'Developers'
+  if (path.startsWith('/dashboard/findings')) return 'Findings'
+  if (path.startsWith('/dashboard/compliance')) return 'Compliance'
+  return 'Overview'
+}
+
+function Brand() {
+  return (
+    <div className="flex items-center gap-2.5 px-2 py-2">
+      <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-ink text-canvas">
+        <ShieldCheck className="size-[18px]" aria-hidden="true" />
+      </span>
+      <div className="leading-tight">
+        <p className="text-sm font-semibold tracking-tight text-ink">OPSES</p>
+        <p className="text-xs text-muted">Governance console</p>
+      </div>
+    </div>
+  )
+}
+
+function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
+  return (
+    <nav aria-label="Primary" className="flex flex-1 flex-col gap-1">
+      {NAV.map((item) => (
+        <SidebarItem
+          key={item.to}
+          to={item.to}
+          end={item.end}
+          icon={item.icon}
+          label={item.label}
+          onClick={onNavigate}
+        />
+      ))}
+    </nav>
+  )
+}
+
+function SidebarFooter() {
+  return (
+    <div className="rounded-lg border border-border bg-canvas p-3">
+      <p className="text-xs font-semibold text-ink">Acme Corp</p>
+      <p className="mt-0.5 text-xs text-muted">Self-hosted deployment</p>
+    </div>
+  )
+}
+
+function SecurePill() {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-ok/25 bg-ok-soft px-2.5 py-1 text-xs font-medium text-ok">
+      <Lock className="size-3.5" aria-hidden="true" />
+      <span className="hidden sm:inline">In-house — nothing leaves the building</span>
+      <span className="sm:hidden">In-house</span>
+    </span>
+  )
+}
+
+/** Live-connection indicator — green dot when streaming from the server, a muted
+    pill when rendering from the bundled sample dataset. */
+function ConnectionPill() {
+  const { status } = useOpses()
+  if (status === 'live') {
+    return (
+      <span
+        title="Streaming live data from the in-house server"
+        className="inline-flex items-center gap-1.5 rounded-full border border-ok/25 bg-ok-soft px-2.5 py-1 text-xs font-medium text-ok"
+      >
+        <span aria-hidden="true" className="relative flex size-2">
+          <span className="absolute inline-flex size-full animate-ping rounded-full bg-ok/60" />
+          <span className="relative inline-flex size-2 rounded-full bg-ok" />
+        </span>
+        Live
+      </span>
+    )
+  }
+  return (
+    <span
+      title={
+        status === 'loading' ? 'Connecting to the server…' : 'Server unreachable — showing sample data'
+      }
+      className="inline-flex items-center gap-1.5 rounded-full border border-border bg-canvas px-2.5 py-1 text-xs font-medium text-muted"
+    >
+      <span aria-hidden="true" className="size-2 rounded-full bg-subtle" />
+      {status === 'loading' ? 'Connecting' : 'Sample data'}
+    </span>
+  )
+}
+
+export default function DashboardLayout() {
+  const location = useLocation()
+  const [navOpen, setNavOpen] = useState(false)
+
+  // Close the mobile drawer whenever the route changes.
+  useEffect(() => {
+    setNavOpen(false)
+  }, [location.pathname])
+
+  // Esc closes the mobile drawer.
+  useEffect(() => {
+    if (!navOpen) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setNavOpen(false)
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [navOpen])
+
+  return (
+    <div className="flex min-h-screen bg-canvas text-ink">
+      {/* Desktop rail */}
+      <Sidebar className="sticky top-0 hidden h-screen lg:flex">
+        <Brand />
+        <div className="mt-3 flex flex-1 flex-col">
+          <NavLinks />
+          <div className="mt-auto pt-3">
+            <SidebarFooter />
+          </div>
+        </div>
+      </Sidebar>
+
+      {/* Mobile drawer */}
+      <div
+        className={cn(
+          'fixed inset-0 z-50 overflow-hidden lg:hidden',
+          navOpen ? '' : 'pointer-events-none',
+        )}
+        aria-hidden={navOpen ? undefined : true}
+        inert={navOpen ? undefined : true}
+      >
+        <div
+          onClick={() => setNavOpen(false)}
+          className={cn(
+            'absolute inset-0 bg-ink/40 transition-opacity duration-300',
+            navOpen ? 'opacity-100' : 'opacity-0',
+          )}
+        />
+        <div
+          className={cn(
+            'absolute inset-y-0 left-0 transition-transform duration-300 ease-out',
+            navOpen ? 'translate-x-0' : '-translate-x-full',
+          )}
+        >
+          <Sidebar role="dialog" aria-modal="true" aria-label="Navigation" className="h-full">
+            <div className="flex items-center justify-between">
+              <Brand />
+              <button
+                type="button"
+                onClick={() => setNavOpen(false)}
+                aria-label="Close navigation"
+                className="inline-flex size-9 items-center justify-center rounded-lg text-muted transition-colors hover:bg-canvas hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+              >
+                <X className="size-5" aria-hidden="true" />
+              </button>
+            </div>
+            <div className="mt-3 flex flex-1 flex-col">
+              <NavLinks onNavigate={() => setNavOpen(false)} />
+              <div className="mt-auto pt-3">
+                <SidebarFooter />
+              </div>
+            </div>
+          </Sidebar>
+        </div>
+      </div>
+
+      {/* Main column */}
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-3 border-b border-border bg-surface/85 px-4 backdrop-blur sm:px-6">
+          <button
+            type="button"
+            onClick={() => setNavOpen(true)}
+            aria-label="Open navigation"
+            aria-expanded={navOpen}
+            className="inline-flex size-9 items-center justify-center rounded-lg text-muted transition-colors hover:bg-canvas hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface lg:hidden"
+          >
+            <Menu className="size-5" aria-hidden="true" />
+          </button>
+          <h1 className="min-w-0 flex-1 truncate text-sm font-semibold text-ink">
+            {titleForPath(location.pathname)}
+          </h1>
+          <div className="flex shrink-0 items-center gap-2">
+            <ConnectionPill />
+            <SecurePill />
+          </div>
+        </header>
+        <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
+          <div className="mx-auto w-full max-w-7xl">
+            <Outlet />
+          </div>
+        </main>
+      </div>
+    </div>
+  )
+}

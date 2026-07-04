@@ -12,8 +12,8 @@
   --color-canvas: #fafafb; /* app background */
   --color-surface: #ffffff; /* cards / panels */
   --color-border: #e9e9ef;
-  --color-muted: #71717a; /* secondary text */
-  --color-subtle: #a1a1aa; /* tertiary text */
+  --color-muted: #52525b; /* secondary text — ~7:1 on white (WCAG AA) */
+  --color-subtle: #6b7280; /* tertiary text — ~4.8:1 on white (WCAG AA) */
 
   /* brand accent (used sparingly) */
   --color-primary: #4f46e5;
@@ -21,11 +21,11 @@
   --color-primary-soft: #eef2ff;
 
   /* severity / status semantics */
-  --color-danger: #dc2626;
+  --color-danger: #b91c1c; /* red-700 — >=4.5:1 on danger-soft (WCAG AA) */
   --color-danger-soft: #fef2f2;
-  --color-warn: #d97706;
+  --color-warn: #b45309; /* amber-700 — >=4.5:1 on warn-soft (WCAG AA) */
   --color-warn-soft: #fffbeb;
-  --color-ok: #16a34a;
+  --color-ok: #15803d; /* green-700 — >=4.5:1 on ok-soft (WCAG AA) */
   --color-ok-soft: #f0fdf4;
   --color-info: #2563eb;
 
