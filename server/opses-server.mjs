@@ -11,6 +11,7 @@ const PORT = Number(process.env.OPSES_PORT || 4319)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const DATA_DIR = path.join(__dirname, 'data')
 fs.mkdirSync(DATA_DIR, { recursive: true })
+const GEMMA_URL = (process.env.OPSES_GEMMA_URL || 'http://127.0.0.1:4320').replace(/\/$/, '')
 
 /** @type {Map<string, any>} */
 const employees = new Map()
@@ -158,16 +159,78 @@ const server = http.createServer((req, res) => {
     const findings = list.flatMap((e) => e.findings || [])
     const costMTD = list.reduce((s, e) => s + (e.tools?.['Claude Code']?.totals?.costUSD || 0), 0)
     const tokensMTD = list.reduce((s, e) => s + (e.tools?.['Claude Code']?.totals?.tokensIn || 0) + (e.tools?.['Claude Code']?.totals?.tokensOut || 0), 0)
+    const toolCounts = {}
+    for (const e of list) for (const t of Object.keys(e.tools || {})) if (e.tools[t].installed) toolCounts[t] = (toolCounts[t] || 0) + 1
     return json(res, 200, {
       activeDevs: list.length,
       openFindings: findings.length,
       bySeverity: { high: findings.filter((f) => f.severity === 'high').length, medium: findings.filter((f) => f.severity === 'medium').length, low: findings.filter((f) => f.severity === 'low').length },
       costMTD: Number(costMTD.toFixed(2)), tokensMTD,
       complianceScore: Math.max(0, 100 - findings.reduce((s, f) => s + ({ high: 12, medium: 5, low: 2 }[f.severity] || 0), 0)),
+      toolSplit: Object.entries(toolCounts).map(([name, value]) => ({ name, value })),
     })
   }
 
-  if (url.pathname === '/') return json(res, 200, { service: 'opses-server', employees: employees.size, endpoints: ['/api/org', '/api/employees', '/api/employees/:id', '/ingest/:id (POST)', '/api/stream (SSE)'] })
+  // GET /api/activity  (daily token/cost buckets from real sessions)
+  if (req.method === 'GET' && url.pathname === '/api/activity') {
+    const buckets = new Map()
+    for (const e of employees.values()) {
+      for (const s of e.tools?.['Claude Code']?.sessions || []) {
+        if (!s.endedAt) continue
+        const day = s.endedAt.slice(0, 10)
+        const b = buckets.get(day) || { date: day, tokens: 0, cost: 0, sessions: 0 }
+        b.tokens += (s.tokensIn || 0) + (s.tokensOut || 0); b.cost += s.costUSD || 0; b.sessions++
+        buckets.set(day, b)
+      }
+    }
+    const rows = [...buckets.values()].sort((a, b) => a.date.localeCompare(b.date)).slice(-14)
+      .map((r) => ({ date: r.date.slice(5), tokens: Number((r.tokens / 1e6).toFixed(2)), cost: Number(r.cost.toFixed(2)), sessions: r.sessions }))
+    return json(res, 200, rows)
+  }
+
+  // POST /api/gemma  { task:'remediate'|'compress'|'explain', input } -> LOCAL Gemma text (graceful fallback)
+  if (req.method === 'POST' && url.pathname === '/api/gemma') {
+    let body = ''
+    req.on('data', (c) => (body += c))
+    req.on('end', async () => {
+      let p
+      try { p = JSON.parse(body || '{}') } catch { return json(res, 400, { error: 'bad json' }) }
+      const task = p.task || 'explain'
+      const input = String(p.input || '').slice(0, 6000)
+      const specs = {
+        remediate: { system: "You are an in-house AI-governance assistant. Given a finding about a developer's AI-tool usage, reply with 2-3 short, concrete remediation steps. No preamble.", prompt: `Finding: ${input}\n\nRemediation steps:` },
+        compress: { system: 'You compress CLAUDE.md instruction files. Keep every operative rule; cut redundancy and filler. Return only the rewrite.', prompt: input },
+        explain: { system: 'You are an in-house AI-governance assistant. Explain this finding to a CISO in two plain sentences.', prompt: input },
+      }
+      const spec = specs[task] || specs.explain
+      try {
+        const ac = new AbortController()
+        const to = setTimeout(() => ac.abort(), Number(process.env.OPSES_GEMMA_TIMEOUT || 60000))
+        const r = await fetch(`${GEMMA_URL}/generate`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ system: spec.system, prompt: spec.prompt, max_new_tokens: p.max || 220 }), signal: ac.signal })
+        clearTimeout(to)
+        if (!r.ok) throw new Error(`gemma ${r.status}`)
+        const d = await r.json()
+        return json(res, 200, { text: d.text, source: 'gemma', model: d.model })
+      } catch (e) {
+        const fb = {
+          remediate: 'Rotate the exposed secret, purge it from prompt history, and add a pre-send secret scanner to the endpoint agent.',
+          compress: input.slice(0, 400) + (input.length > 400 ? ' …' : ''),
+          explain: "Sensitive data or a risky agentic-AI configuration was detected in this developer's usage and should be reviewed against policy.",
+        }
+        return json(res, 200, { text: fb[task] || fb.explain, source: 'fallback', note: 'local Gemma not running', error: String(e.message || e) })
+      }
+    })
+    return
+  }
+
+  // GET /api/findings  (all findings across employees, newest first)
+  if (req.method === 'GET' && url.pathname === '/api/findings') {
+    const all = [...employees.values()].flatMap((e) => (e.findings || []).map((f) => ({ ...f, devName: e.name })))
+    all.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.severity] - { high: 0, medium: 1, low: 2 }[b.severity]) || String(b.detectedAt).localeCompare(String(a.detectedAt)))
+    return json(res, 200, all)
+  }
+
+  if (url.pathname === '/') return json(res, 200, { service: 'opses-server', employees: employees.size, endpoints: ['/api/org', '/api/activity', '/api/findings', '/api/employees', '/api/employees/:id', '/ingest/:id (POST)', '/api/stream (SSE)'] })
   json(res, 404, { error: 'not found' })
 })
 
